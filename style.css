@@ -16,7 +16,8 @@ body {
   background-color: #111111;
 }
 #theme-switcher-form div:nth-child(4) label {
-  background-color: #813151;
+  background-image: url("images/Backgrounds/Icon/Dirt.webp");
+  background-size: cover;
 }
 /* Remember these for every theme ;) */
 
@@ -30,7 +31,7 @@ html[data-theme="light"] {
   --table-text: #191715;
   --table-group1: #EEE;
   --table-group2: #DDD;
-  --echlevel-color: var(--link-primary);
+  --echlevel-color: var(--table-text);
   --echlevel-bg: white;
   --echlevel-shadow: #888;
   --enchantment-results: #cfc;
@@ -38,6 +39,7 @@ html[data-theme="light"] {
   --error: #f99;
   --phone-warn: #fa9;
   --solution: #cfc;
+  --button-border: black;
 }
 
 html[data-theme="dark"] {
@@ -50,34 +52,37 @@ html[data-theme="dark"] {
   --table-text: #333;
   --table-group1: #CCC;
   --table-group2: #BBB;
-  --echlevel-color: var(--link-primary);
+  --echlevel-color: var(--table-text);
   --echlevel-bg: white;
   --echlevel-shadow: #888;
-  --enchantment-results: #0E754D;
+  --enchantment-results: #03ad5f;
   --progress-color: #f1a32f;
   --error: #f90601;
   --phone-warn: #e7cc03;
   --solution: #03ad5f;
+  --button-border: black;
 }
 
-html[data-theme="crimson"] {
-  --bg-primary: #331320;
-  --bg-secondary: #4d1d31;
+html[data-theme="dirt"] {
+  --bg-image: url("images/Backgrounds/Icon/Dirt.webp");
+  --bg-primary: #6b472e;
+  --bg-secondary: #6b472e;
   --fg-primary: white;
   --fg-secondary: #eee;
   --link-primary: #66b3ff;
   --link-hover: #4d8ac3;
   --table-text: #DDD;
-  --table-group1: #813151;
-  --table-group2: #672741;
+  --table-group1: #6b472e;
+  --table-group2: #855c3f;
   --echlevel-color: var(--table-text);
   --echlevel-bg: var(--table-group1);
   --echlevel-shadow: var(--table-group2);
-  --enchantment-results: #006666;
+  --enchantment-results: #4f311b;
   --progress-color: #f1a32f;
   --error: #f90601;
   --phone-warn: #e7cc03;
-  --solution: var(--enchantment-results);
+  --solution: #6b472e;
+  --button-border: var(--enchantment-results);
 }
 
 html[data-theme="wither"] {
@@ -98,6 +103,7 @@ html[data-theme="wither"] {
   --error: #f90601;
   --phone-warn: #e7cc03;
   --solution: var(--enchantment-results);
+  --button-border: var(--enchantment-results);
 }
 
 /* TODO: fix enchantment results variable name, misnomer */
@@ -107,7 +113,9 @@ html[data-theme="wither"] {
 }
 
 body {
+    background: var(--bg-image, var(--bg-primary));
     background-color: var(--bg-primary);
+    background-size: 100px;
     color: var(--fg-primary);
 }
 
@@ -171,16 +179,16 @@ a:hover {
 }
 
 #enchants button {
+    border: 1px solid var(--button-border);
     background-color: var(--echlevel-bg);
     padding: 10px;
     vertical-align: top;
-    box-shadow: 2px 1px 2px var(--echlevel-shadow);
     color: var(--echlevel-color);
     margin: 2px 0px 2px 0px;
 }
 
 #enchants button.on {
-    box-shadow: 0 0 0 var(--echlevel-shadow);
+  border: 1px solid var(--button-border);
     color: var(--echlevel-color);
     background-color: var(--enchantment-results);
 }
@@ -227,6 +235,7 @@ a:hover {
 }
 
 #solution {
+  border-radius: 20px;
     background-color: var(--solution);
     padding: 20px;
     margin-top: 20px;
@@ -318,7 +327,7 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90px; /* Adjust the width as needed */
+  width: 120px; /* Adjust the width as needed */
   margin: auto; /* Center form */
 }
 
@@ -381,3 +390,7 @@ a:hover {
     width: 90px;
   }*/
 } /* bigger screens */
+
+button{
+  border-radius: 10px;
+}
