@@ -38,8 +38,8 @@ const languages_cache_key = 6;
 
 const prefers_color_scheme = window.matchMedia("(prefers-color-scheme: dark)");
 if (prefers_color_scheme.matches) {
-    document.documentElement.dataset.theme = 'dark';
-    localStorage.setItem("tswitch-theme", 'dark');
+    document.documentElement.dataset.theme = 'wither';
+    localStorage.setItem("tswitch-theme", 'wither');
 } else {
     document.documentElement.dataset.theme = 'light';
     localStorage.setItem("tswitch-theme", 'light');
@@ -759,10 +759,6 @@ function changeLanguageByJson(languageJson){
     h1Element.textContent = languageJson.h1_title;
 
     /* paragraphs */
-    const paragraphs = document.getElementsByTagName('p');
-    paragraphs[1].innerHTML = languageJson.paragraph_1;
-    paragraphs[2].innerHTML = languageJson.paragraph_2;
-    paragraphs[3].innerHTML = languageJson.paragraph_3;
 
 
     /* selection */
