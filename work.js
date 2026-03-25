@@ -23,7 +23,7 @@ onmessage = onmessage = event => {
         Object.freeze(ID_LIST);
     }
     if (event.data.msg === 'process') {
-        process(event.data.item, event.data.enchants, event.data.mode);
+        process(event.data.item, event.data.enchants, event.data.mode, event.data.starting_state);
     }
 };
 
