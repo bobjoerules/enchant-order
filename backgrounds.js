@@ -30,7 +30,19 @@ const BACKGROUND_IMAGES = [
     "backgrounds/1920px-Update_Aquatic.png",
     "backgrounds/1920px-Village_&_Pillage_banner.png",
     "backgrounds/1920px-Wild_key_art.png",
-    "backgrounds/1920px-World_of_Color_Update.png"
+    "backgrounds/1920px-World_of_Color_Update.png",
+    "backgrounds/New_Key-Art_02.jpg",
+    "backgrounds/New_Key-Art_04.webp",
+    "backgrounds/Technically_Updated.jpg",
+    "backgrounds/wallpaper_marketplace_pride_2022_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_15th-anniversary_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_burberry_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_default_skins_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_island_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_java_edition_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_mineshaft_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_ocean_monument_2560x1440.png",
+    "backgrounds/wallpaper_minecraft_winter_celebration_2560x1440.png"
 ];
 
 const PAINTING_IMAGES = [
