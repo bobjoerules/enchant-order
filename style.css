@@ -813,6 +813,6 @@ summary {
 }
 
 /* Hide Native Selects */
-.selectLanguage, .selectItem, .starting-enchant-level {
+.selectLanguage, .selectItem {
   display: none !important;
 }

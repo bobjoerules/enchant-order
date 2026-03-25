@@ -76,6 +76,12 @@ function buildItemSelection() {
         itemOptions.push({ value: item_namespace, label: item_namespace });
     });
 
+    // Populate native select for compatibility
+    $("#item").empty();
+    itemOptions.forEach(opt => {
+        $("<option/>", { value: opt.value }).text(opt.label).appendTo("#item");
+    });
+
     itemDropdown = createCustomDropdown(
         itemOptions,
         $('#left p:first'),
@@ -110,6 +116,7 @@ function createCustomDropdown(options, $targetContainer, $nativeSelect, getIconH
         item.on('click', function () {
             onSelect(opt.value);
             $nativeSelect.val(opt.value).change();
+            dropdown.updateSelection(opt.value);
             wrapper.removeClass('open');
         });
 
@@ -145,9 +152,17 @@ function createCustomDropdown(options, $targetContainer, $nativeSelect, getIconH
             } else {
                 iconContainer.hide();
             }
-            selected.find('.text').text(label);
+
+            // Always use the latest label from the list to ensure translations are correct
+            const currentLabel = optionsCont.find(`.custom-dropdown-option[data-value="${value}"] .text`).text() || label;
+            selected.find('.text').text(currentLabel);
+
             optionsCont.find(`.custom-dropdown-option`).removeClass('selected');
             optionsCont.find(`.custom-dropdown-option[data-value="${value}"]`).addClass('selected');
+
+            if ($nativeSelect.val() !== value) {
+                $nativeSelect.val(value).change();
+            }
         }
     };
 
@@ -176,7 +191,7 @@ function buildStartingPenaltySelection() {
         $('#anvil-penalty-label').parent(),
         $('#starting-penalty'),
         function (val) {
-            return `<img src="./images/down.png" class="icon" style="filter: brightness(0.5) invert(1);" alt="">`;
+            return '';
         },
         function (val) {
             // No extra action needed
@@ -836,6 +851,12 @@ function getFlagUrl(code) {
 }
 
 async function setupLanguage() {
+    // Populate native select first for compatibility
+    $("#language").empty();
+    Object.keys(languages).forEach(key => {
+        $("<option/>", { value: key }).text(languages[key].name).appendTo("#language");
+    });
+
     langDropdown = createCustomDropdown(
         Object.keys(languages).map(key => ({ value: key, label: languages[key].name })),
         $('#language-selection-container'),
