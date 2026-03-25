@@ -62,17 +62,25 @@ function process(item, enchants, mode = 'levels', starting_state) {
             });
             base_item = new item_obj('item', base_value, base_enchants);
             base_item.w = starting_state.penalty;
+            if (starting_state.rename) base_item.rn = false;
         } else {
             base_item = new item_obj('item');
         }
     }
 
     if (enchant_objs.length === 0) {
+        let instructions = [];
+        let extra = [0, 0];
+        if (base_item.rn === false) {
+            const cost = 1 + 2 ** base_item.w - 1;
+            instructions = [[base_item.c || { I: ITEM_NAME, l: base_item.l, w: base_item.w }, { I: "Rename" }, cost, experience(cost), 2 ** base_item.w - 1, true]];
+            extra = [cost, experience(cost)];
+        }
         postMessage({
             msg: 'complete',
             item_obj: base_item,
-            instructions: [],
-            extra: [0, 0],
+            instructions: instructions,
+            extra: extra,
             enchants: enchants
         });
         return;
@@ -154,8 +162,11 @@ function getInstructions(comb) {
     } else {
         merge_cost = comb.R.l + 2 ** comb.L.w - 1 + 2 ** comb.R.w - 1
     }
+
+    if (comb.rn) merge_cost += 1;
+
     let work = Math.max(comb.L.w, comb.R.w) + 1
-    const single_instruction = [comb.L, comb.R, merge_cost, experience(merge_cost), 2 ** work - 1];
+    const single_instruction = [comb.L, comb.R, merge_cost, experience(merge_cost), 2 ** work - 1, comb.rn];
     instructions.push(single_instruction);
     return instructions;
 }
@@ -410,6 +421,7 @@ class item_obj {
         this.w = 0 // work
         this.l = value // value, in MergeEnchants merge_cost
         this.x = 0 // total xp
+        this.rn = true;
     }
 }
 
@@ -417,7 +429,12 @@ class item_obj {
 class MergeEnchants extends item_obj {
     // In MergeEnchants c.v: value and c.l: merge_cost (both for instructions), (this.l: value)
     constructor(left, right) {
-        const merge_cost = right.l + 2 ** left.w - 1 + 2 ** right.w - 1
+        let rename_extra = 0;
+        if (!left.rn && left.i === 'item') {
+            rename_extra = 1;
+        }
+
+        const merge_cost = right.l + 2 ** left.w - 1 + 2 ** right.w - 1 + rename_extra
         if (merge_cost > MAXIMUM_MERGE_LEVELS) {
             throw new MergeLevelsTooExpensiveError();
         }
@@ -426,7 +443,8 @@ class MergeEnchants extends item_obj {
         this.e = left.e.concat(right.e) // list of enchants
         this.w = Math.max(left.w, right.w) + 1 // new work
         this.x = left.x + right.x + experience(merge_cost) // total xp
-        this.c = {L: left.c, R: right.c, l: merge_cost, w: this.w, v: this.l} // instructions
+        this.c = { L: left.c, R: right.c, l: merge_cost, w: this.w, v: this.l, rn: rename_extra > 0 } // instructions
+        this.rn = true;
     }
 }
 

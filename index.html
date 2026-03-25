@@ -125,10 +125,10 @@
                     State (Optional)</summary>
                 <div
                     style="padding: 15px; border: 1px solid var(--table-group2); border-radius: 8px; background: var(--bg-secondary); margin-bottom: 15px;">
-                    <p style="margin-top: 0;">
+                    <div id="anvil-penalty-container">
                         <label for="starting-penalty" id="anvil-penalty-label" style="font-weight: bold;">Anvil
                             Penalty:</label>
-                        <select id="starting-penalty" class="selectLanguage" style="margin-top: 0; padding: 2px 8px;">
+                        <select id="starting-penalty" class="selectLanguage" style="display: none;">
                             <option value="0">0 (New)</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -137,7 +137,7 @@
                             <option value="5">5</option>
                             <option value="6">6+</option>
                         </select>
-                    </p>
+                    </div>
                     <p id="existing-enchantments-label" style="font-weight: bold; margin-bottom: 8px;">Existing
                         Enchantments:</p>
                     <div id="starting-enchants"
@@ -160,6 +160,12 @@
                         <label>
                             <input type="checkbox" id="allow_many" onchange="allowManyChanged()">
                             <span id="override-max-number">Allow more than 10 enchantments</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" id="rename_item" onchange="renameItemChanged()">
+                            <span id="rename-item-label">Rename Item</span>
                         </label>
                     </div>
                 </div>

@@ -65,6 +65,7 @@ function buildCalculateButton() {
 function buildFilters() {
     $("#allow_incompatible").change(allowIncompatibleChanged);
     $("#allow_many").change(allowManyChanged);
+    $("#rename_item").change(renameItemChanged);
 }
 
 let itemDropdown;
@@ -381,6 +382,10 @@ function allowManyChanged() {
     }
 }
 
+function renameItemChanged() {
+    updateCalculateButtonState();
+}
+
 function turnOffLevelButtons() {
     const enchantment_buttons = $(".level-button");
     turnOffButtons(enchantment_buttons);
@@ -477,11 +482,19 @@ function displayInstructionText(instruction) {
     const levels = instruction[2];
     const xp = instruction[3]
     const work = instruction[4];
+    const renamed = instruction[5];
 
-    const left_item_text = displayItemText(left_item_obj);
-    const right_item_text = displayItemText(right_item_obj);
+    let instruction_text;
+    if (right_item_obj && right_item_obj.I === "Rename") {
+        const left_item_text = displayItemText(left_item_obj);
+        instruction_text = (languageJson.rename || "Rename ") + " <i>" + left_item_text + "</i>";
+    } else {
+        const left_item_text = displayItemText(left_item_obj);
+        const right_item_text = displayItemText(right_item_obj);
 
-    const instruction_text = languageJson.combine + " <i>" + left_item_text + "</i> " + languageJson.with + " <i>" + right_item_text + "</i>";
+        instruction_text = languageJson.combine + " <i>" + left_item_text + "</i> " + languageJson.with + " <i>" + right_item_text + "</i>" + (renamed ? " " + (languageJson.and_rename || "and rename") : "");
+    }
+
     const cost_text = languageJson.cost + displayLevelXpText(levels, xp);
     const prior_work_text = languageJson.prior_work_penalty + displayLevelsText(work);
 
@@ -759,7 +772,8 @@ function retrieveSelectedItem() {
 
 function updateCalculateButtonState() {
     const enchantment_foundation = retrieveEnchantmentFoundation();
-    if (enchantment_foundation.length === 0) {
+    const rename_checked = $("#rename_item").is(":checked");
+    if (enchantment_foundation.length === 0 && !rename_checked) {
         $("#calculate").attr("disabled", true);
     } else {
         $("#calculate").attr("disabled", false);
@@ -780,6 +794,7 @@ function calculate() {
 
 function retrieveStartingState() {
     const penalty = parseInt($("#starting-penalty").val()) || 0;
+    const rename = $("#rename_item").is(":checked");
     const enchants = [];
     $(".starting-enchant-checkbox:checked").each(function () {
         const ns = $(this).data("ns");
@@ -787,7 +802,7 @@ function retrieveStartingState() {
         const level = levelSelect.length > 0 ? parseInt(levelSelect.val()) : 1;
         enchants.push([ns, level]);
     });
-    return { penalty, enchants };
+    return { penalty, rename, enchants };
 }
 
 
@@ -988,6 +1003,8 @@ function changeLanguageByJson(languageJson) {
     if (startingTitle) startingTitle.textContent = languageJson.starting_item_state_title;
     const anvilPenaltyLabel = document.getElementById("anvil-penalty-label");
     if (anvilPenaltyLabel) anvilPenaltyLabel.textContent = languageJson.anvil_penalty;
+    const renameItemLabel = document.getElementById("rename-item-label");
+    if (renameItemLabel) renameItemLabel.textContent = languageJson.rename_item;
     const existingEnchantsLabel = document.getElementById("existing-enchantments-label");
     if (existingEnchantsLabel) existingEnchantsLabel.textContent = languageJson.existing_enchantments;
 

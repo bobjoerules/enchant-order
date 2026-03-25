@@ -716,7 +716,6 @@ html[data-theme="wither"] .gallery-toggle-btn.active {
   position: relative;
   width: fit-content;
   min-width: 120px;
-  margin-top: 6px;
   font-size: 14px;
 }
 
@@ -729,6 +728,26 @@ html[data-theme="wither"] .gallery-toggle-btn.active {
   margin-bottom: 20px;
 }
 
+#anvil-penalty-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px;
+  margin-bottom: 15px;
+  height: 32px;
+  line-height: normal;
+}
+
+#anvil-penalty-label {
+  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+#anvil-penalty-container .custom-dropdown-wrapper {
+  margin-bottom: 0 !important;
+}
+
 #left select#item + .custom-dropdown-wrapper {
   min-width: 250px;
 }
@@ -737,10 +756,12 @@ html[data-theme="wither"] .gallery-toggle-btn.active {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   background-color: var(--table-group1);
   border: 1px solid var(--table-group2);
   border-radius: 4px;
+  min-height: 32px;
+  box-sizing: border-box;
   cursor: pointer;
   color: var(--table-text);
   transition: all 0.2s ease;
