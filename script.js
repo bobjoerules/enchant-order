@@ -9,46 +9,48 @@ let languageId;
 let enchants_list;
 
 const languages = {
-    'en'    : 'English',
-
-    // in alphabetical order
-    'de'    : 'Deutsch',
-    'es-ES' : 'Español',
-    'fr-FR' : 'Français',
-    'it-IT' : 'Italiano',
-    'id'    : 'Indonesia',
-    'hu-HU' : 'Magyar',
-    'nl'    : 'Nederlands',
-    'pl-PL' : 'Polski',
-    'pt-BR' : 'Português',
-    'vi-VN' : 'Tiếng Việt',
-    'tr-TR' : 'Türkçe',
-    'be-BY' : 'Беларуская',
-    'ru-RU' : 'Русский',
-    'ua-UA' : 'Українська',
-    'th-TH' : 'ภาษาไทย',
-    'zh-CN' : '简体中文',
-    'zh-TW' : '繁體中文',
-    'ja-JP' : '日本語',
-    'ko-KR' : '한국어',
-    'ar'    : 'اَلْعَرَبِيَّةُ',
+    'en': 'English',
+    'de': 'Deutsch',
+    'es-ES': 'Español',
+    'fr-FR': 'Français',
+    'it-IT': 'Italiano',
+    'id': 'Indonesia',
+    'hu-HU': 'Magyar',
+    'nl': 'Nederlands',
+    'pl-PL': 'Polski',
+    'pt-BR': 'Português',
+    'vi-VN': 'Tiếng Việt',
+    'tr-TR': 'Türkçe',
+    'be-BY': 'Беларуская',
+    'ru-RU': 'Русский',
+    'ua-UA': 'Українська',
+    'th-TH': 'ภาษาไทย',
+    'zh-CN': '简体中文',
+    'zh-TW': '繁體中文',
+    'ja-JP': '日本語',
+    'ko-KR': '한국어',
+    'ar': 'اَلْعَرَبِيَّةُ',
 };
 
 const languages_cache_key = 6;
 
-const prefers_color_scheme = window.matchMedia("(prefers-color-scheme: dark)");
-if (prefers_color_scheme.matches) {
-    document.documentElement.dataset.theme = 'dark';
-    localStorage.setItem("tswitch-theme", 'dark');
+if (!localStorage.getItem("tswitch-theme")) {
+    const prefers_color_scheme = window.matchMedia("(prefers-color-scheme: dark)");
+    if (prefers_color_scheme.matches) {
+        document.documentElement.dataset.theme = 'wither';
+        localStorage.setItem("tswitch-theme", 'wither');
+    } else {
+        document.documentElement.dataset.theme = 'snow';
+        localStorage.setItem("tswitch-theme", 'snow');
+    }
 } else {
-    document.documentElement.dataset.theme = 'light';
-    localStorage.setItem("tswitch-theme", 'light');
+    document.documentElement.dataset.theme = localStorage.getItem("tswitch-theme");
 }
 
-window.onload = function() {
+window.onload = function () {
 
     worker = new Worker("work.js?6");
-    worker.onmessage = function(event) {
+    worker.onmessage = function (event) {
         if (event.data.msg === "complete") {
             afterFoundOptimalSolution(event.data);
         }
@@ -63,6 +65,7 @@ window.onload = function() {
     buildCalculateButton();
     buildFilters();
     setupLanguage();
+    setupBackgroundImage();
 };
 
 function buildCalculateButton() {
@@ -205,12 +208,44 @@ function buildEnchantList(item_namespace_chosen) {
                     enchantment_row.append($("<td>"));
                 }
             }
-
             $("#enchants table").append(enchantment_row);
+            group_toggle_color = !group_toggle_color;
         });
-
-        group_toggle_color = !group_toggle_color;
     });
+
+    $("#starting-enchants").html("");
+    if (item_namespace_chosen !== "book") {
+        item_enchantment_namespaces.forEach(enchantment_namespace => {
+            const enchantment_metadata = enchantments_metadata[enchantment_namespace];
+            const enchantment_max_level = enchantment_metadata.levelMax;
+            const enchantment_name = languageJson.enchants[enchantment_namespace];
+
+            const container = $("<div style='display: flex; align-items: center; gap: 4px; margin-bottom: 2px;'/>");
+
+            const checkbox = $('<input type="checkbox" class="starting-enchant-checkbox">');
+            checkbox.attr("id", "start-en-" + enchantment_namespace);
+            checkbox.data("ns", enchantment_namespace);
+
+            const label = $("<label style='cursor:pointer; white-space: nowrap;'/>");
+            label.attr("for", "start-en-" + enchantment_namespace);
+            label.text(enchantment_name + " ");
+
+            container.append(checkbox).append(label);
+
+            if (enchantment_max_level > 1) {
+                const level_select = $('<select class="starting-enchant-level" style="padding: 0 2px; font-size: 0.8rem;">');
+                for (let l = 1; l <= enchantment_max_level; l++) {
+                    $("<option/>", { value: l }).text(l).appendTo(level_select);
+                }
+                level_select.val(enchantment_max_level);
+                container.append(level_select);
+            }
+            $("#starting-enchants").append(container);
+        });
+        $("#starting-state").show();
+    } else {
+        $("#starting-state").hide();
+    }
 
     $("#enchants").show();
     updateCalculateButtonState();
@@ -246,7 +281,7 @@ function turnOffLevelButtons() {
 }
 
 function buildEnchantmentSelection() {
-    $("select#item").change(function() {
+    $("select#item").change(function () {
         const item_namespace_selected = $("select#item option:selected").val();
         if (item_namespace_selected) {
             buildEnchantList(item_namespace_selected);
@@ -254,10 +289,11 @@ function buildEnchantmentSelection() {
         } else {
             $("#enchants").hide();
             $("#overrides").hide();
+            $("#starting-state").hide();
         }
     });
 
-    $("#enchants table").on("click", "button", function() {
+    $("#enchants table").on("click", "button", function () {
         levelButtonClicked($(this));
     });
 }
@@ -288,19 +324,19 @@ function displayLevelsText(levels) {
 function pluralize(num, key_root) {
 
     if (languageJson.use_russian_plurals) {
-      if ((num % 10 === 1) && (num < 10 || num > 15)) {
-        return String(num) + languageJson[key_root];
-      } else if ((num % 10 === 2 || num % 10 === 3 || num % 10 === 4) && (num < 10 || num > 15)) {
-        return String(num) + languageJson[key_root + '_low'];
-      } else {
-        return String(num) + languageJson[key_root + '_high'];
-      }
+        if ((num % 10 === 1) && (num < 10 || num > 15)) {
+            return String(num) + languageJson[key_root];
+        } else if ((num % 10 === 2 || num % 10 === 3 || num % 10 === 4) && (num < 10 || num > 15)) {
+            return String(num) + languageJson[key_root + '_low'];
+        } else {
+            return String(num) + languageJson[key_root + '_high'];
+        }
     }
 
     if (num === 1) {
-      return String(num) + languageJson[key_root];
+        return String(num) + languageJson[key_root];
     } else {
-      return String(num) + languageJson[key_root + '_s'];
+        return String(num) + languageJson[key_root + '_s'];
     }
 }
 
@@ -375,14 +411,14 @@ function displayItemText(item_obj) {
     if (languageJson.enchants.hasOwnProperty(item_obj.I)) {
         enchantments_obj.push(item_obj.I)
         item_namespace = 'book'
-    } else if (typeof(item_obj.I) === 'string') {
+    } else if (typeof (item_obj.I) === 'string') {
         item_namespace = item_obj.I
     } else {
         item_namespace = languageJson.enchants.hasOwnProperty(item_obj.L.I) ? 'book' : item_obj.L.I;
         enchants = findEnchantments(item_obj)
         enchantments_obj = enchants
     }
-    if (typeof(item_namespace) === 'undefined') {
+    if (typeof (item_namespace) === 'undefined') {
         item_namespace = findItemNamespace(item_obj.L)
     }
     const icon_text = '<img src="./images/' + item_namespace + '.gif" class="icon">';
@@ -598,7 +634,7 @@ function retrieveEnchantmentFoundation() {
     const enchantment_foundation = [];
     const buttons_on = $("#enchants button.on");
 
-    buttons_on.each(function(button_index, button) {
+    buttons_on.each(function (button_index, button) {
         const enchantment_name = $(button).data("enchant");
         const enchantment_level = $(button).data("level");
         const enchantment_namespace = enchantmentNamespaceFromStylized(enchantment_name);
@@ -632,9 +668,23 @@ function calculate() {
 
     const cheapness_mode = retrieveCheapnessMode();
     const item_namespace = retrieveSelectedItem();
+    const starting_state = retrieveStartingState();
 
-    startCalculating(item_namespace, enchantment_foundation, cheapness_mode);
+    startCalculating(item_namespace, enchantment_foundation, cheapness_mode, starting_state);
 }
+
+function retrieveStartingState() {
+    const penalty = parseInt($("#starting-penalty").val()) || 0;
+    const enchants = [];
+    $(".starting-enchant-checkbox:checked").each(function () {
+        const ns = $(this).data("ns");
+        const levelSelect = $(this).siblings(".starting-enchant-level");
+        const level = levelSelect.length > 0 ? parseInt(levelSelect.val()) : 1;
+        enchants.push([ns, level]);
+    });
+    return { penalty, enchants };
+}
+
 
 function solutionHeaderTextFromMode(mode) {
     let solution_header_text;
@@ -652,7 +702,7 @@ function updateSolutionHeader(mode) {
     solution_header.text(solution_header_text);
 }
 
-function startCalculating(item_namespace, enchantment_foundation, mode) {
+function startCalculating(item_namespace, enchantment_foundation, mode, starting_state) {
     if (enchantment_foundation.length >= 6) {
         if (
             navigator.userAgent.match(/Android/i) ||
@@ -675,33 +725,34 @@ function startCalculating(item_namespace, enchantment_foundation, mode) {
         msg: "process",
         item: item_namespace,
         enchants: enchantment_foundation,
-        mode: mode
+        mode: mode,
+        starting_state: starting_state
     });
     $("#progress .lbl").text(languageJson.calculating_solution);
     $("#progress").show();
 }
 
-function languageChangeListener(){
+function languageChangeListener() {
     const selectLanguage = document.getElementById('language');
-    selectLanguage.addEventListener('change', function() {
+    selectLanguage.addEventListener('change', function () {
         const selectedValue = selectLanguage.value;
         changePageLanguage(selectedValue);
     });
 }
 
-async function setupLanguage(){
-    for (const i in languages){
-        $("<option/>", {'value': i}).text(languages[i]).appendTo('#language');
+async function setupLanguage() {
+    for (const i in languages) {
+        $("<option/>", { 'value': i }).text(languages[i]).appendTo('#language');
     }
     defineBrowserLanguage();
     languageChangeListener();
 }
 
-function defineBrowserLanguage(){
+function defineBrowserLanguage() {
     if (!localStorage.getItem("savedlanguage")) {
         // language isn't saved and has to be detected
         const browserLanguage = navigator.language || navigator.userLanguage;
-        if (languages[browserLanguage]){
+        if (languages[browserLanguage]) {
             changePageLanguage(browserLanguage);
         } else {
             changePageLanguage('en');
@@ -712,66 +763,66 @@ function defineBrowserLanguage(){
     }
 }
 
-async function changePageLanguage(language){
-    if (!languages[language]){
+async function changePageLanguage(language) {
+    if (!languages[language]) {
         console.error("Trying to switch to unknown language:", language);
         return;
     }
 
     languageId = language;
-    if (language == 'en'){
-      languageJson = await loadJsonLanguage(language).then(languageData => { return languageData});
-    }else{
-      var languageJsonEn = await loadJsonLanguage('en').then(languageData => { return languageData});
-      languageJson = await loadJsonLanguage(language).then(languageData => { return languageData});
-      languageJson = mergeKeys(languageJson, languageJsonEn);
+    if (language == 'en') {
+        languageJson = await loadJsonLanguage(language).then(languageData => { return languageData });
+    } else {
+        var languageJsonEn = await loadJsonLanguage('en').then(languageData => { return languageData });
+        languageJson = await loadJsonLanguage(language).then(languageData => { return languageData });
+        languageJson = mergeKeys(languageJson, languageJsonEn);
     }
-    if (languageJson){
+    if (languageJson) {
         changeLanguageByJson(languageJson);
         localStorage.setItem("savedlanguage", language);
         // ^ Save language choice to localstorage
     }
 }
 
-function mergeKeys(a, b){
-  var o = {};
-  for (var i in b){
-    if (typeof b[i] === 'object'){
-      o[i] = mergeKeys(a.hasOwnProperty(i) ? a[i] : {}, b[i]);
-    }else{
-      if (a.hasOwnProperty(i)){
-        o[i] = a[i]
-      }else{
-        o[i] = b[i];
-      }
+function mergeKeys(a, b) {
+    var o = {};
+    for (var i in b) {
+        if (typeof b[i] === 'object') {
+            o[i] = mergeKeys(a.hasOwnProperty(i) ? a[i] : {}, b[i]);
+        } else {
+            if (a.hasOwnProperty(i)) {
+                o[i] = a[i]
+            } else {
+                o[i] = b[i];
+            }
+        }
     }
-  }
-  return o;
+    return o;
 }
 
 function loadJsonLanguage(language) {
-    return fetch('languages/'+language+'.json?'+languages_cache_key)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Can\'t load language file');
-        }
-        return response.json();
-      })
-      .then(data => {
-        return data;
-      })
-      .catch(error => {
-        console.error('Language file error:', error);
-        return null;
-      });
+    return fetch('languages/' + language + '.json?' + languages_cache_key)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Can\'t load language file');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data;
+        })
+        .catch(error => {
+            console.error('Language file error:', error);
+            return null;
+        });
 }
 
 
-function changeLanguageByJson(languageJson){
+function changeLanguageByJson(languageJson) {
     /* check for duplicate names */
     const map = {};
-    for (let i in languageJson.enchants){
-        if (map[languageJson.enchants[i]]){
+    for (let i in languageJson.enchants) {
+        if (map[languageJson.enchants[i]]) {
             console.error("Duplicate string for enchant names (must be unique)", languageId, i, map[languageJson.enchants[i]]);
         }
         map[languageJson.enchants[i]] = i;
@@ -781,15 +832,12 @@ function changeLanguageByJson(languageJson){
     h1Element.textContent = languageJson.h1_title;
 
     /* summaries */
-    const summaries = document.getElementsByTagName('summary');
-    summaries[0].innerHTML = languageJson.summary_1;
-    summaries[1].innerHTML = languageJson.summary_2;
+    const summaryEnchants = document.getElementById("summary-about-enchants");
+    if (summaryEnchants) summaryEnchants.innerHTML = languageJson.summary_1;
 
     /* paragraphs */
-    const paragraphs = document.getElementsByTagName('p');
-    paragraphs[1].innerHTML = languageJson.paragraph_1;
-    paragraphs[2].innerHTML = languageJson.paragraph_2;
-    paragraphs[3].innerHTML = languageJson.paragraph_3;
+    const paraAboutEnchants = document.getElementById("para-about-enchants");
+    if (paraAboutEnchants) paraAboutEnchants.innerHTML = languageJson.paragraph_1;
 
 
     /* selection */
@@ -816,7 +864,309 @@ function changeLanguageByJson(languageJson){
 
     document.getElementById("xp-range-note").textContent = languageJson.note;
 
+    /* new starting state UI */
+    const startingTitle = document.getElementById("starting-item-state-title");
+    if (startingTitle) startingTitle.textContent = languageJson.starting_item_state_title;
+    const anvilPenaltyLabel = document.getElementById("anvil-penalty-label");
+    if (anvilPenaltyLabel) anvilPenaltyLabel.textContent = languageJson.anvil_penalty;
+    const existingEnchantsLabel = document.getElementById("existing-enchantments-label");
+    if (existingEnchantsLabel) existingEnchantsLabel.textContent = languageJson.existing_enchantments;
+
     $("select#item").change();
     $("#solution").hide();
     $("#error").hide();
+}
+
+function setupBackgroundImage() {
+    const bgInput = document.getElementById('bg-image-input');
+    const openGalleryBtn = document.getElementById('open-gallery-btn');
+    const closeGalleryBtn = document.getElementById('close-gallery-btn');
+    const galleryModal = document.getElementById('bg-gallery-modal');
+
+    // Load saved background if exists
+    const savedBg = localStorage.getItem('custom-bg-image');
+    if (savedBg) {
+        const isTiled = localStorage.getItem('custom-bg-tiled') === 'true';
+        const isPixelated = localStorage.getItem('custom-bg-pixelated') === 'true';
+        applyBackgroundImage(savedBg, isTiled, isPixelated);
+    }
+
+    let galleryLoaded = false;
+    if (openGalleryBtn && galleryModal) {
+        openGalleryBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            galleryModal.style.display = 'flex';
+
+            if (!galleryLoaded) {
+                const galleryGrid = galleryModal.querySelector('.gallery-grid');
+                galleryGrid.innerHTML = '';
+
+                const noneDiv = document.createElement('div');
+                noneDiv.className = 'gallery-img gallery-none-card';
+                noneDiv.innerHTML = '<span style="font-size: 24px; font-weight: bold;">None</span>';
+                noneDiv.setAttribute('data-name', 'Clear Background');
+                noneDiv.addEventListener('click', function () {
+                    clearBackground();
+                    galleryModal.style.display = 'none';
+                });
+
+                function formatImageName(src) {
+                    let filename = src.split('/').pop().split('.')[0];
+                    // Clean up 1920px prefixes
+                    filename = filename.replace(/^1920px-/, '');
+                    return filename.split('_').map(word => {
+                        return word.charAt(0).toUpperCase() + word.slice(1);
+                    }).join(' ');
+                }
+
+                const hasWallpapers = typeof BACKGROUND_IMAGES !== 'undefined' && BACKGROUND_IMAGES.length > 0;
+                const hasBlocks = (typeof BLOCK_IMAGES !== 'undefined' && BLOCK_IMAGES.length > 0);
+
+                if (hasWallpapers || hasBlocks) {
+                    // Wallpapers Section
+                    if (hasWallpapers) {
+                        // Put None button as the first item in the grid to avoid grid overlap
+                        galleryGrid.appendChild(noneDiv);
+
+                        BACKGROUND_IMAGES.forEach(src => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.className = 'gallery-img';
+                            img.setAttribute('data-src', src);
+                            const name = formatImageName(src);
+                            img.alt = name;
+                            img.setAttribute('data-name', name);
+                            img.addEventListener('click', function (evt) {
+                                applyBackgroundImage(src, false, false); // Wallpapers are not pixelated
+                                try {
+                                    localStorage.setItem('custom-bg-image', src);
+                                    localStorage.setItem('custom-bg-tiled', 'false');
+                                    localStorage.setItem('custom-bg-pixelated', 'false');
+                                } catch (err) { }
+                                galleryModal.style.display = 'none';
+                            });
+                            galleryGrid.appendChild(img);
+                        });
+                    }
+
+                    // Paintings Section
+                    if (typeof PAINTING_IMAGES !== 'undefined' && PAINTING_IMAGES.length > 0) {
+                        const paintingHeader = document.createElement('div');
+                        paintingHeader.className = 'gallery-section-title';
+                        paintingHeader.textContent = 'Paintings';
+                        galleryGrid.appendChild(paintingHeader);
+
+                        PAINTING_IMAGES.forEach(src => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.className = 'gallery-img square';
+                            img.setAttribute('data-src', src);
+                            const name = formatImageName(src);
+                            img.alt = name;
+                            img.setAttribute('data-name', name);
+                            img.addEventListener('click', function (evt) {
+                                applyBackgroundImage(src, false, true); // Paintings are pixelated
+                                try {
+                                    localStorage.setItem('custom-bg-image', src);
+                                    localStorage.setItem('custom-bg-tiled', 'false');
+                                    localStorage.setItem('custom-bg-pixelated', 'true');
+                                } catch (err) { }
+                                galleryModal.style.display = 'none';
+                            });
+                            galleryGrid.appendChild(img);
+                        });
+                    }
+
+                    // Decorations Section
+                    if (typeof OTHER_IMAGES !== 'undefined' && OTHER_IMAGES.length > 0) {
+                        const otherHeader = document.createElement('div');
+                        otherHeader.className = 'gallery-section-title';
+                        otherHeader.textContent = 'Other';
+                        galleryGrid.appendChild(otherHeader);
+
+                        OTHER_IMAGES.forEach(src => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.className = 'gallery-img square';
+                            img.setAttribute('data-src', src);
+                            const name = formatImageName(src);
+                            img.alt = name;
+                            img.setAttribute('data-name', name);
+                            img.addEventListener('click', function (evt) {
+                                applyBackgroundImage(src, false, true);
+                                try {
+                                    localStorage.setItem('custom-bg-image', src);
+                                    localStorage.setItem('custom-bg-tiled', 'false');
+                                    localStorage.setItem('custom-bg-pixelated', 'true');
+                                } catch (err) { }
+                                galleryModal.style.display = 'none';
+                            });
+                            galleryGrid.appendChild(img);
+                        });
+                    }
+
+                    // Blocks Section
+                    if (typeof BLOCK_IMAGES !== 'undefined') {
+                        const blockHeader = document.createElement('div');
+                        blockHeader.className = 'gallery-section-title';
+                        blockHeader.textContent = 'Blocks (Tiled)';
+                        galleryGrid.appendChild(blockHeader);
+
+                        // If no wallpapers followed by blocks, None might be missing. 
+                        // But I put it in wallpapers. 
+                        // If only blocks exist:
+                        if (!hasWallpapers) {
+                            galleryGrid.insertBefore(noneDiv, blockHeader.nextSibling);
+                        }
+
+                        if (BLOCK_IMAGES.length === 0) {
+                            const emptyMsg = document.createElement('p');
+                            emptyMsg.style.gridColumn = '1/-1';
+                            emptyMsg.style.textAlign = 'center';
+                            emptyMsg.style.fontSize = '0.9rem';
+                            emptyMsg.style.color = 'var(--fg-secondary)';
+                            emptyMsg.textContent = 'No pre-installed blocks.';
+                            galleryGrid.appendChild(emptyMsg);
+                        } else {
+                            BLOCK_IMAGES.forEach(src => {
+                                const img = document.createElement('img');
+                                img.src = src;
+                                img.className = 'gallery-img square';
+                                img.setAttribute('data-src', src);
+                                const name = formatImageName(src);
+                                img.alt = name;
+                                img.setAttribute('data-name', name);
+                                img.addEventListener('click', function (evt) {
+                                    applyBackgroundImage(src, true, true); // Blocks are tiled and pixelated
+                                    try {
+                                        localStorage.setItem('custom-bg-image', src);
+                                        localStorage.setItem('custom-bg-tiled', 'true');
+                                        localStorage.setItem('custom-bg-pixelated', 'true');
+                                    } catch (err) { }
+                                    galleryModal.style.display = 'none';
+                                });
+                                galleryGrid.appendChild(img);
+                            });
+                        }
+                    }
+
+                    const tooltip = document.getElementById('gallery-custom-tooltip');
+
+                    galleryGrid.addEventListener('mousemove', function (e) {
+                        if (tooltip && tooltip.style.display === 'block') {
+                            tooltip.style.left = (e.clientX + 16) + 'px';
+                            tooltip.style.top = (e.clientY + 16) + 'px';
+                        }
+                    });
+
+                    galleryGrid.addEventListener('mouseover', function (evt) {
+                        const target = evt.target;
+                        if (target.classList.contains('gallery-img') || target.classList.contains('gallery-none-card')) {
+                            if (tooltip) {
+                                const name = target.getAttribute('data-name') || 'None';
+                                tooltip.textContent = name;
+                                tooltip.style.display = 'block';
+                                // To be safe, ensure browser doesn't show title
+                                if (target.title) target.title = "";
+                            }
+                        }
+                    });
+
+                    galleryGrid.addEventListener('mouseout', function (evt) {
+                        if (tooltip) tooltip.style.display = 'none';
+                    });
+
+                    galleryLoaded = true;
+                } else {
+                    // Just show None and empty msg
+                    galleryGrid.appendChild(noneDiv);
+                    const emptyMsg = document.createElement('p');
+                    emptyMsg.style.gridColumn = '1/-1';
+                    emptyMsg.style.textAlign = 'center';
+                    emptyMsg.style.color = 'var(--fg-secondary)';
+                    emptyMsg.textContent = 'No pre-installed images found. You can manually upload your own below!';
+                    galleryGrid.appendChild(emptyMsg);
+                    galleryLoaded = true;
+                }
+            }
+        });
+    }
+
+    if (closeGalleryBtn && galleryModal) {
+        closeGalleryBtn.addEventListener('click', function (e) {
+            galleryModal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', function (e) {
+        if (e.target === galleryModal) {
+            galleryModal.style.display = 'none';
+        }
+    });
+
+    if (bgInput) {
+        bgInput.addEventListener('change', function (e) {
+            handleBackgroundUpload(e, false);
+        });
+    }
+
+    const blockInput = document.getElementById('block-image-input');
+    if (blockInput) {
+        blockInput.addEventListener('change', function (e) {
+            handleBackgroundUpload(e, true);
+        });
+    }
+
+    function handleBackgroundUpload(e, tiled) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const dataUrl = event.target.result;
+                applyBackgroundImage(dataUrl, tiled, true); // Custom uploads are likely low res or desired as pixelated in this theme
+                try {
+                    localStorage.setItem('custom-bg-image', dataUrl);
+                    localStorage.setItem('custom-bg-tiled', tiled);
+                    localStorage.setItem('custom-bg-pixelated', 'true');
+                } catch (err) {
+                    console.warn("Could not save background image to localStorage:", err);
+                }
+            };
+            reader.readAsDataURL(file);
+            if (galleryModal) galleryModal.style.display = 'none';
+        }
+    }
+}
+
+function clearBackground() {
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundSize = '';
+    document.body.style.backgroundPosition = '';
+    document.body.style.backgroundAttachment = '';
+    document.body.classList.remove('has-custom-bg');
+    document.body.classList.remove('tiled');
+    document.body.classList.remove('pixelated-bg');
+    localStorage.removeItem('custom-bg-image');
+    localStorage.removeItem('custom-bg-tiled');
+    localStorage.removeItem('custom-bg-pixelated');
+    const bgInput = document.getElementById('bg-image-input');
+    if (bgInput) bgInput.value = '';
+    const blockInput = document.getElementById('block-image-input');
+    if (blockInput) blockInput.value = '';
+}
+
+function applyBackgroundImage(dataUrl, tiled = false, pixelated = false) {
+    document.body.style.backgroundImage = 'url("' + dataUrl + '")';
+    document.body.classList.add('has-custom-bg');
+    if (tiled) {
+        document.body.classList.add('tiled');
+        document.body.classList.add('pixelated-bg'); // Tiled blocks are ALWAYS pixelated
+    } else {
+        document.body.classList.remove('tiled');
+        if (pixelated) {
+            document.body.classList.add('pixelated-bg');
+        } else {
+            document.body.classList.remove('pixelated-bg');
+        }
+    }
 }

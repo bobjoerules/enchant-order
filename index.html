@@ -1,233 +1,221 @@
 <html lang="en">
-    <head>
-        <title>Minecraft Enchantment Ordering Tool</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta charset="utf-8">
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-        <script src="data.js?11"></script>
-        <script src="script.js?17"></script>
-        <link rel="stylesheet" type="text/css" href="style.css?3">
-        <script src="https://unpkg.com/@hungrybluedev/theme-switcher@latest/dist/switch.js" type="module" defer></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
-        <link rel="manifest" href="./site.webmanifest">
-    </head>
-    <body>
 
-        <div class="inner">
-            
-            <div class="top-container">
-                <p>
-                    <label for="language"></label>
-                    <select id="language" class="selectLanguage">
-                        <option value="">Choose a language</option>
-                    </select>
-                </p>
-                
-            </div>
-            
-            <h1>Minecraft Enchantment Ordering Tool</h1>
+<head>
+    <title>Minecraft Enchantment Ordering Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="data.js?11"></script>
+    <script src="backgrounds.js?3"></script>
+    <script src="script.js?2" defer></script>
+    <link rel="stylesheet" type="text/css" href="style.css?2">
+    <script src="https://unpkg.com/@hungrybluedev/theme-switcher@latest/dist/switch.js" type="module" defer></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+    <link rel="manifest" href="./site.webmanifest">
+</head>
 
-            <details id="details-enchants" open>
-                <summary>About Enchantment in Minecraft</summary>
-                <p>
-                    When enchanting items in Minecraft, the order in which you combine armor, weapons and tools with books in your
-                    anvil makes a huge difference. Each time you work on an anvil, you increase the <a href="https://minecraft.wiki/w/Anvil_mechanics" target="_blank">work penalty</a> for future workings. Once that
-                    penalty gets too high, you simply can't add any more enchantments and the anvil says "Too Expensive!". This tool
-                    helps you plan the optimal order of combining and applying books, to give you the cheapest possible cost.
-                </p>
-            </details>
-            <details id="details-tool" open>
-                <summary>About this tool</summary>
-                <p>
-                    This tool assume your gear and books start with zero "work penalty". That means you have not previously combined
-                    the books (e.g. to turn two level 1 books into a single level 2 book) or worked the items or books in an anvil
-                    in any way. To create gear with the maximum possible enchantment, you cannot combine lower-level books and must
-                    start with high-level books from villager trading.
-                </p>
-                <p>
-                    Allowing incompatible enchantments may be useful for combining protection-type enchantments (1.14 to 1.14.3pre-1)
-                    and mending/infinity (1.9 to 1.11.1).
-                </p>
-            </details>
-            <hr>
+<body>
 
-            <div id="left">
+    <div class="inner">
 
-                <p>
-                    <label for="item"></label>
-                    <select id="item" class="selectItem">
-                        <option value="">Choose an item to enchant</option>
-                    </select>
-                </p>
+        <div class="top-container">
+            <p id="language-selection-container">
+                <label for="language"></label>
+                <select id="language" class="selectLanguage">
+                    <option value="">Choose a language</option>
+                </select>
+            </p>
 
-                <div id="enchants" style="display: none">
-                    <table></table>
+        </div>
 
-                    <div id="overrides" style="">
-                        <div>
-                            <label>
-                                <input type="checkbox" id="allow_incompatible" onchange="allowIncompatibleChanged()">
-                                <span id="override-incompatible">Allow incompatible enchantments</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                <input type="checkbox" id="allow_many" onchange="allowManyChanged()">
-                                <span id="override-max-number">Allow more than 10 enchantments</span>
-                            </label>
-                        </div>
+        <h1>Minecraft Enchantment Ordering Tool</h1>
+
+        <details id="details-enchants" open>
+            <summary id="summary-about-enchants">About Enchantment in Minecraft</summary>
+            <p id="para-about-enchants">
+                When enchanting items in Minecraft, the order in which you combine armor, weapons and tools with books
+                in your
+                anvil makes a huge difference. Each time you work on an anvil, you increase the <a
+                    href="https://minecraft.wiki/w/Anvil_mechanics" target="_blank">work penalty</a> for future
+                workings. Once that
+                penalty gets too high, you simply can't add any more enchantments and the anvil says "Too Expensive!".
+                This tool
+                helps you plan the optimal order of combining and applying books, to give you the cheapest possible
+                cost.
+            </p>
+        </details>
+
+        <hr>
+
+        <div id="left">
+
+            <p>
+                <label for="item"></label>
+                <select id="item" class="selectItem">
+                    <option value="">Choose an item to enchant</option>
+                </select>
+            </p>
+
+            <details id="starting-state" style="display: none; margin-bottom: 20px;">
+                <summary id="starting-item-state-title" style="font-size: 1rem; margin-bottom: 10px;">Starting Item State (Optional)</summary>
+                <div style="padding: 15px; border: 1px solid var(--table-group2); border-radius: 8px; background: var(--bg-secondary); margin-bottom: 15px;">
+                    <p style="margin-top: 0;">
+                        <label for="starting-penalty" id="anvil-penalty-label" style="font-weight: bold;">Anvil Penalty:</label>
+                        <select id="starting-penalty" class="selectLanguage" style="margin-top: 0; padding: 2px 8px;">
+                            <option value="0">0 (New)</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6+</option>
+                        </select>
+                    </p>
+                    <p id="existing-enchantments-label" style="font-weight: bold; margin-bottom: 8px;">Existing Enchantments:</p>
+                    <div id="starting-enchants" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; font-size: 0.9rem;">
                     </div>
-                    <p>
-                        <button id="calculate">Calculate &raquo;</button>
-                    </p>
                 </div>
-            </div>
+            </details>
 
-            <div id="right">
+            <div id="enchants" style="display: none">
+                <table></table>
 
-                <p id="mode_selection">
-                    <span id="optimize-label">Optimize for:</span>
-                    <label>
-                        <input type="radio" name="cheapness-mode" checked="checked" value="levels">
-                        <span id="optimize-xp">Least XP/Levels</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="cheapness-mode" value="prior_work">
-                        <span id="optimize-pwp">Least Prior Work Penalty</span>
-                    </label>
+                <div id="overrides">
+                    <div>
+                        <label>
+                            <input type="checkbox" id="allow_incompatible" onchange="allowIncompatibleChanged()">
+                            <span id="override-incompatible">Allow incompatible enchantments</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" id="allow_many" onchange="allowManyChanged()">
+                            <span id="override-max-number">Allow more than 10 enchantments</span>
+                        </label>
+                    </div>
+                </div>
+                <p>
+                    <button id="calculate">Calculate &raquo;</button>
                 </p>
-
-                <div id="progress" style="display: none">
-                    <img src="spin.svg" width="20" height="20" alt="">
-                    <span class="lbl">Text here</span>
-                </div>
-
-                <div id="solution" style="display: none">
-                    <h2 id="solution-header">Optimal solution found!</h2>
-
-                    <p id="timings">Completed in under a second</p>
-                    <p><b id="total-cost-label">Total cost:</b> <span id="level-cost">####</span></p>
-                    <h3>Steps</h3>
-                    <ol id="steps">
-                    </ol>
-                    <p id="xp-range-note" style="display: none">
-                        Note: The two XP values shown are the difference between saving up for all levels/XP in one go,
-                        versus gaining levels/XP between each enchantment step.
-                    </p>
-                </div>
-
-                <div id="error" style="display: none">
-                    <span class="lbl">Text here</span>
-                </div>
-
-                <div id="phone-warn" style="display: none">
-                    <span class="lbl">
-                        You have selected many enchantments and are using a phone or tablet - the calculator may run out of memory and crash.
-                        Try selecting fewer enchantments, or using a computer.
-                    </span>
-                </div>
-
             </div>
         </div>
-        <div class="footer">
-            <div class="dark-mode-toggle-container">
+
+        <div id="right">
+
+            <p id="mode_selection">
+                <span id="optimize-label">Optimize for:</span>
+                <label>
+                    <input type="radio" name="cheapness-mode" checked="checked" value="levels">
+                    <span id="optimize-xp">Least XP/Levels</span>
+                </label>
+                <label>
+                    <input type="radio" name="cheapness-mode" value="prior_work">
+                    <span id="optimize-pwp">Least Prior Work Penalty</span>
+                </label>
+            </p>
+
+            <div id="progress" style="display: none">
+                <img src="spin.svg" width="20" height="20" alt="">
+                <span class="lbl">Text here</span>
+            </div>
+
+            <div id="solution" style="display: none">
+                <h2 id="solution-header">Optimal solution found!</h2>
+
+                <p id="timings">Completed in under a second</p>
+                <p><b id="total-cost-label">Total cost:</b> <span id="level-cost">####</span></p>
+                <h3>Steps</h3>
+                <ol id="steps">
+                </ol>
+                <p id="xp-range-note" style="display: none">
+                    Note: The two XP values shown are the difference between saving up for all levels/XP in one go,
+                    versus gaining levels/XP between each enchantment step.
+                </p>
+            </div>
+
+            <div id="error" style="display: none">
+                <span class="lbl">Text here</span>
+            </div>
+
+            <div id="phone-warn" style="display: none">
+                <span class="lbl">
+                    You have selected many enchantments and are using a phone or tablet - the calculator may run out of
+                    memory and crash.
+                    Try selecting fewer enchantments, or using a computer.
+                </span>
+            </div>
+
+        </div>
+    </div>
+    <div class="footer">
+        <div class="dark-mode-toggle-container">
             <form id="theme-switcher-form">
                 <div>
-                <input
-                    type="radio"
-                    id="light-theme"
-                    name="theme-choice"
-                    value="light-theme"
-                    selected="selected"
-                />
-                <label for="light-theme"></label>
+                    <input type="radio" id="snow-theme" name="theme-choice" value="snow-theme" selected="selected" />
+                    <label for="snow-theme"></label>
                 </div>
 
                 <div>
-                <input
-                    type="radio"
-                    id="dark-theme"
-                    name="theme-choice"
-                    value="dark-theme"
-                />
-                <label for="dark-theme"></label>
+                    <input type="radio" id="stone-theme" name="theme-choice" value="stone-theme" />
+                    <label for="stone-theme"></label>
                 </div>
 
                 <div>
-                <input
-                    type="radio"
-                    id="wither-theme"
-                    name="theme-choice"
-                    value="wither-theme"
-                />
-                <label for="wither-theme"></label>
-                </div>
-
-                <div>
-                <input
-                    type="radio"
-                    id="crimson-theme"
-                    name="theme-choice"
-                    value="crimson-theme"
-                />
-                <label for="crimson-theme"></label>
-                </div>
-
-                <div>
-                <input
-                    type="radio"
-                    id="dirt-theme"
-                    name="theme-choice"
-                    value="dirt-theme"
-                />
-                <label for="dirt-theme"></label>
-                </div>
-
-                <div>
-                <input
-                    type="radio"
-                    id="enderman-theme"
-                    name="theme-choice"
-                    value="enderman-theme"
-                />
-                <label for="enderman-theme"></label>
-                </div>
-
-                <div>
-                <input
-                    type="radio"
-                    id="prismarine-theme"
-                    name="theme-choice"
-                    value="prismarine-theme"
-                />
-                <label for="prismarine-theme"></label>
-                </div>
-
-                <div>
-                <input
-                    type="radio"
-                    id="bronze-theme"
-                    name="theme-choice"
-                    value="bronze-theme"
-                />
-                <label for="bronze-theme"></label>
-                </div>
-                <div>
-                <input
-                    type="radio"
-                    id="sand-theme"
-                    name="theme-choice"
-                    value="sand-theme"
-                />
-                <label for="sand-theme"></label>
+                    <input type="radio" id="wither-theme" name="theme-choice" value="wither-theme" />
+                    <label for="wither-theme"></label>
                 </div>
             </form>
-            </div>
-            
-            <p>Built by Cal Henderson. <a href="https://github.com/iamcal/enchant-order">Source on Github</a></p>
         </div>
 
-    </body>
+        <div id="right-controls" style="display: inline-flex; align-items: center;">
+            <button id="open-gallery-btn" class="icon-btn" aria-label="Background Gallery" title="Background Gallery"
+                style="background: none; border: none; padding: 0;">
+                <svg height="24" width="24" style="fill: currentColor; vertical-align: bottom;">
+                    <mask id="bg-img-mask">
+                        <rect width="24" height="24" fill="white" />
+                        <svg x="4.5" y="5.5" width="15" height="15" viewBox="0 0 512 512">
+                            <path fill="black"
+                                d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z">
+                            </path>
+                        </svg>
+                    </mask>
+                    <circle cx="12" cy="12" r="12" mask="url(#bg-img-mask)" />
+                </svg>
+            </button>
+
+
+            <a href="https://github.com/bobjoerules/enchant-order" id="github-link" aria-label="Source on Github"
+                target="_blank">
+                <svg height="24" viewBox="0 0 16 16" width="24" style="fill: currentColor; vertical-align: bottom;">
+                    <path
+                        d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.46-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z">
+                    </path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <div id="bg-gallery-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; color: var(--fg-primary);">Choose Background</h2>
+                <span class="close-btn" id="close-gallery-btn">&times;</span>
+            </div>
+            <div class="gallery-grid">
+            </div>
+            <div class="gallery-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
+                <div style="display: flex; gap: 10px;">
+                    <label for="bg-image-input" class="upload-btn">Upload Custom Background...</label>
+                </div>
+                <input type="file" id="bg-image-input" accept="image/*" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <div id="gallery-custom-tooltip"></div>
+</body>
+
 </html>

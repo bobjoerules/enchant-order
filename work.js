@@ -28,7 +28,7 @@ onmessage = onmessage = event => {
 };
 
 
-function process(item, enchants, mode = 'levels') {
+function process(item, enchants, mode = 'levels', starting_state) {
     ITEM_NAME = item
     Object.freeze(ITEM_NAME);
 
@@ -36,29 +36,55 @@ function process(item, enchants, mode = 'levels') {
     enchants.forEach(enchant => { // Creates objects of enchants
         let id = ID_LIST[enchant[0]]
         let e_obj = new item_obj('book', enchant[1] * ENCHANTMENT2WEIGHT[id], [id])
-        e_obj.c = {I: id, l: e_obj.l, w: e_obj.w}
+        e_obj.c = { I: id, l: e_obj.l, w: e_obj.w }
         enchant_objs.push(e_obj)
     });
-    // Finds the most expensive enchant
-    let mostExpensive = enchant_objs.reduce((maxIndex, item, currentIndex, array) => {
-        return item.l > array[maxIndex].l ? currentIndex : maxIndex;
-    }, 0);
 
-    let id;
+    let base_item;
+    let mostExpensive;
+
     if (ITEM_NAME === 'book') {
-        id = enchant_objs[mostExpensive].e[0]
-        item = new item_obj(id, enchant_objs[mostExpensive].l) // Makes the most expensive book the base
-        item.e.push(id)
-        enchant_objs.splice(mostExpensive, 1)
-        // Finds a new most expensive enchant
         mostExpensive = enchant_objs.reduce((maxIndex, item, currentIndex, array) => {
             return item.l > array[maxIndex].l ? currentIndex : maxIndex;
         }, 0);
+        const id = enchant_objs[mostExpensive].e[0];
+        base_item = new item_obj(id, enchant_objs[mostExpensive].l) // Makes the most expensive book the base
+        base_item.e.push(id)
+        enchant_objs.splice(mostExpensive, 1)
     } else {
-        item = new item_obj('item')
+        if (starting_state) {
+            let base_value = 0;
+            let base_enchants = [];
+            starting_state.enchants.forEach(en => {
+                const id = ID_LIST[en[0]];
+                base_enchants.push(id);
+                base_value += en[1] * ENCHANTMENT2WEIGHT[id];
+            });
+            base_item = new item_obj('item', base_value, base_enchants);
+            base_item.w = starting_state.penalty;
+        } else {
+            base_item = new item_obj('item');
+        }
     }
-    let merged_item = new MergeEnchants(item, enchant_objs[mostExpensive]) // Merges the most expensive enchant with the item
-    merged_item.c.L = {I: item.i, l: 0, w: 0}
+
+    if (enchant_objs.length === 0) {
+        postMessage({
+            msg: 'complete',
+            item_obj: base_item,
+            instructions: [],
+            extra: [0, 0],
+            enchants: enchants
+        });
+        return;
+    }
+
+    // Finds a new most expensive enchant
+    mostExpensive = enchant_objs.reduce((maxIndex, item, currentIndex, array) => {
+        return item.l > array[maxIndex].l ? currentIndex : maxIndex;
+    }, 0);
+
+    let merged_item = new MergeEnchants(base_item, enchant_objs[mostExpensive]) // Merges the most expensive enchant with the item
+    merged_item.c.L = { I: base_item.i, l: 0, w: 0 }
     enchant_objs.splice(mostExpensive, 1)
 
     let all_objs = enchant_objs.concat(merged_item)

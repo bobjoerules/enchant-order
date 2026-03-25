@@ -16,6 +16,9 @@
 
     "radio_label_optimize_xp": "Least XP/Levels",
     "radio_label_optimize_pwp": "Least Prior Work Penalty",
+    "starting_item_state_title": "Starting Item State (Optional)",
+    "anvil_penalty": "Anvil Penalty:",
+    "existing_enchantments": "Existing Enchantments:",
 
 
     "optimal_solution_cumulative_levels": "Optimal solution found (by lowest cumulative levels)!",
