@@ -7,29 +7,27 @@
 <script>
 
 const languages = {
-    'en'    : 'English',
-
-    // in alphabetical order
-    'de'    : 'Deutsch',
-    'es-ES' : 'Español',
-    'fr-FR' : 'Français',
-    'it-IT' : 'Italiano',
-    'id'    : 'Indonesia',
-    'hu-HU' : 'Magyar',
-    'nl'    : 'Nederlands',
-    'pl-PL' : 'Polski',
-    'pt-BR' : 'Português',
-    'vi-VN' : 'Tiếng Việt',
-    'tr-TR' : 'Türkçe',
-    'be-BY' : 'Беларуская',
-    'ru-RU' : 'Русский',
-    'ua-UA' : 'Українська',
-    'th-TH' : 'ภาษาไทย',
-    'zh-CN' : '简体中文',
-    'zh-TW' : '繁體中文',
-    'ja-JP' : '日本語',
-    'ko-KR' : '한국어',
-    'ar'    : 'اَلْعَرَبِيَّةُ',
+    'en': { name: 'English', code: 'us' },
+    'de': { name: 'Deutsch', code: 'de' },
+    'es-ES': { name: 'Español', code: 'es' },
+    'fr-FR': { name: 'Français', code: 'fr' },
+    'it-IT': { name: 'Italiano', code: 'it' },
+    'id': { name: 'Indonesia', code: 'id' },
+    'hu-HU': { name: 'Magyar', code: 'hu' },
+    'nl': { name: 'Nederlands', code: 'nl' },
+    'pl-PL': { name: 'Polski', code: 'pl' },
+    'pt-BR': { name: 'Português', code: 'br' },
+    'vi-VN': { name: 'Tiếng Việt', code: 'vn' },
+    'tr-TR': { name: 'Türkçe', code: 'tr' },
+    'be-BY': { name: 'Беларуская', code: 'by' },
+    'ru-RU': { name: 'Русский', code: 'ru' },
+    'ua-UA': { name: 'Українська', code: 'ua' },
+    'th-TH': { name: 'ภาษาไทย', code: 'th' },
+    'zh-CN': { name: '简体中文', code: 'cn' },
+    'zh-TW': { name: '繁體中文', code: 'tw' },
+    'ja-JP': { name: '日本語', code: 'jp' },
+    'ko-KR': { name: '한국어', code: 'kr' },
+    'ar': { name: 'اَلْعَرَبِيَّةُ', code: 'sa' }
 };
 
 const special_space_handling = {
@@ -80,7 +78,7 @@ async function loadLangs(){
 	for (const lang_id in languages){
 		var cell = $('<th>');
 		cell.addClass('sticky-top');
-		cell.text(lang_id + ': ' + languages[lang_id]);
+		cell.text(lang_id + ': ' + languages[lang_id].name);
 		tr.append(cell);
 	}
 	tb.append(tr);

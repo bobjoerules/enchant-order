@@ -9,27 +9,27 @@ let languageId;
 let enchants_list;
 
 const languages = {
-    'en': 'English',
-    'de': 'Deutsch',
-    'es-ES': 'Español',
-    'fr-FR': 'Français',
-    'it-IT': 'Italiano',
-    'id': 'Indonesia',
-    'hu-HU': 'Magyar',
-    'nl': 'Nederlands',
-    'pl-PL': 'Polski',
-    'pt-BR': 'Português',
-    'vi-VN': 'Tiếng Việt',
-    'tr-TR': 'Türkçe',
-    'be-BY': 'Беларуская',
-    'ru-RU': 'Русский',
-    'ua-UA': 'Українська',
-    'th-TH': 'ภาษาไทย',
-    'zh-CN': '简体中文',
-    'zh-TW': '繁體中文',
-    'ja-JP': '日本語',
-    'ko-KR': '한국어',
-    'ar': 'اَلْعَرَبِيَّةُ',
+    'en': { name: 'English', code: 'us' },
+    'de': { name: 'Deutsch', code: 'de' },
+    'es-ES': { name: 'Español', code: 'es' },
+    'fr-FR': { name: 'Français', code: 'fr' },
+    'it-IT': { name: 'Italiano', code: 'it' },
+    'id': { name: 'Indonesia', code: 'id' },
+    'hu-HU': { name: 'Magyar', code: 'hu' },
+    'nl': { name: 'Nederlands', code: 'nl' },
+    'pl-PL': { name: 'Polski', code: 'pl' },
+    'pt-BR': { name: 'Português', code: 'br' },
+    'vi-VN': { name: 'Tiếng Việt', code: 'vn' },
+    'tr-TR': { name: 'Türkçe', code: 'tr' },
+    'be-BY': { name: 'Беларуская', code: 'by' },
+    'ru-RU': { name: 'Русский', code: 'ru' },
+    'ua-UA': { name: 'Українська', code: 'ua' },
+    'th-TH': { name: 'ภาษาไทย', code: 'th' },
+    'zh-CN': { name: '简体中文', code: 'cn' },
+    'zh-TW': { name: '繁體中文', code: 'tw' },
+    'ja-JP': { name: '日本語', code: 'jp' },
+    'ko-KR': { name: '한국어', code: 'kr' },
+    'ar': { name: 'اَلْعَرَبِيَّةُ', code: 'sa' }
 };
 
 const languages_cache_key = 6;
@@ -49,11 +49,12 @@ window.onload = function () {
         data: data
     });
 
+    setupLanguage();
     buildItemSelection();
+    buildStartingPenaltySelection();
     buildEnchantmentSelection();
     buildCalculateButton();
     buildFilters();
-    setupLanguage();
     setupBackgroundImage();
 };
 
@@ -66,12 +67,121 @@ function buildFilters() {
     $("#allow_many").change(allowManyChanged);
 }
 
+let itemDropdown;
 function buildItemSelection() {
+    const itemOptions = [
+        { value: "", label: "Choose an item to enchant" }
+    ];
     data.items.forEach(item_namespace => {
-        const item_listbox_metadata = { value: item_namespace };
-        const item_listbox = $("<option/>", item_listbox_metadata);
-        item_listbox.text(item_namespace).appendTo("select#item");
+        itemOptions.push({ value: item_namespace, label: item_namespace });
     });
+
+    itemDropdown = createCustomDropdown(
+        itemOptions,
+        $('#left p:first'),
+        $('#item'),
+        function (val) {
+            if (!val) return '';
+            return `<img src="./images/${val}.gif" class="icon" alt="">`;
+        },
+        function (val) {
+            $('#item').val(val).change();
+        }
+    );
+}
+
+function createCustomDropdown(options, $targetContainer, $nativeSelect, getIconHtml, onSelect) {
+    const wrapper = $('<div class="custom-dropdown-wrapper"></div>');
+    const selected = $('<div class="custom-dropdown-selected"></div>');
+    selected.append('<span class="icon-container"></span>');
+    selected.append('<span class="text"></span>');
+    selected.append('<span class="arrow"></span>');
+
+    const optionsCont = $('<div class="custom-dropdown-options"></div>');
+
+    options.forEach(opt => {
+        if (opt.value === "") return; // Don't show empty/placeholder in the dropdown menu
+
+        const item = $('<div class="custom-dropdown-option"></div>');
+        item.attr('data-value', opt.value);
+        item.append(`<span class="icon-container">${getIconHtml(opt.value)}</span>`);
+        item.append(`<span class="text">${opt.label}</span>`);
+
+        item.on('click', function () {
+            onSelect(opt.value);
+            $nativeSelect.val(opt.value).change();
+            wrapper.removeClass('open');
+        });
+
+        optionsCont.append(item);
+    });
+
+    selected.on('click', function (e) {
+        e.stopPropagation();
+        const isOpen = wrapper.hasClass('open');
+        $('.custom-dropdown-wrapper').removeClass('open');
+        if (!isOpen) wrapper.addClass('open');
+    });
+
+    $(document).on('click', function () {
+        wrapper.removeClass('open');
+    });
+
+    wrapper.append(selected).append(optionsCont);
+    $targetContainer.append(wrapper);
+
+    const dropdown = {
+        updateOptionLabel: function (value, newLabel) {
+            optionsCont.find(`.custom-dropdown-option[data-value="${value}"] .text`).text(newLabel);
+            if ($nativeSelect.val() === value) {
+                selected.find('.text').text(newLabel);
+            }
+        },
+        updateSelection: function (value, label) {
+            const iconHtml = getIconHtml(value);
+            const iconContainer = selected.find('.icon-container');
+            if (iconHtml) {
+                iconContainer.html(iconHtml).show();
+            } else {
+                iconContainer.hide();
+            }
+            selected.find('.text').text(label);
+            optionsCont.find(`.custom-dropdown-option`).removeClass('selected');
+            optionsCont.find(`.custom-dropdown-option[data-value="${value}"]`).addClass('selected');
+        }
+    };
+
+    // Initial state
+    const initialVal = $nativeSelect.val() || options[0].value;
+    const initialLabel = options.find(o => o.value === initialVal)?.label || options[0].label;
+    dropdown.updateSelection(initialVal, initialLabel);
+
+    return dropdown;
+}
+
+
+let penaltyDropdown;
+function buildStartingPenaltySelection() {
+    const penaltyOptions = [
+        { value: "0", label: "0 (New)" },
+        { value: "1", label: "1" },
+        { value: "2", label: "2" },
+        { value: "3", label: "3" },
+        { value: "4", label: "4" },
+        { value: "5", label: "5" },
+        { value: "6", label: "6+" }
+    ];
+    penaltyDropdown = createCustomDropdown(
+        penaltyOptions,
+        $('#anvil-penalty-label').parent(),
+        $('#starting-penalty'),
+        function (val) {
+            return `<img src="./images/down.png" class="icon" style="filter: brightness(0.5) invert(1);" alt="">`;
+        },
+        function (val) {
+            // No extra action needed
+        }
+    );
 }
 
 function incompatibleGroupFromNamespace(enchantment_namespace) {
@@ -720,13 +830,28 @@ function languageChangeListener() {
     });
 }
 
-async function setupLanguage() {
-    for (const i in languages) {
-        $("<option/>", { 'value': i }).text(languages[i]).appendTo('#language');
-    }
-    defineBrowserLanguage();
-    languageChangeListener();
+let langDropdown;
+function getFlagUrl(code) {
+    return `https://flagcdn.com/w20/${code.toLowerCase()}.png`;
 }
+
+async function setupLanguage() {
+    langDropdown = createCustomDropdown(
+        Object.keys(languages).map(key => ({ value: key, label: languages[key].name })),
+        $('#language-selection-container'),
+        $('#language'),
+        function (val) {
+            if (!val) return '';
+            const code = languages[val].code;
+            return `<img src="${getFlagUrl(code)}" class="flag-icon" alt="">`;
+        },
+        function (val) {
+            changePageLanguage(val);
+        }
+    );
+    defineBrowserLanguage();
+}
+
 
 function defineBrowserLanguage() {
     if (!localStorage.getItem("savedlanguage")) {
@@ -757,8 +882,8 @@ async function changePageLanguage(language) {
     }
     if (languageJson) {
         changeLanguageByJson(languageJson);
-        const selectLanguage = document.getElementById('language');
-        if (selectLanguage) selectLanguage.value = language;
+        const lang = languages[language];
+        if (langDropdown) langDropdown.updateSelection(language, lang.name);
         localStorage.setItem("savedlanguage", language);
     }
 }
@@ -818,11 +943,12 @@ function changeLanguageByJson(languageJson) {
     const options = document.getElementById("item").getElementsByTagName("option");
     let i = 1;
 
-    options[0].textContent = languageJson.choose_an_item_to_enchant;
-    data.items.forEach(item_namespace => {
-        options[i].textContent = languageJson.items[item_namespace];
-        i++;
-    });
+    if (itemDropdown) {
+        itemDropdown.updateOptionLabel("", languageJson.choose_an_item_to_enchant);
+        data.items.forEach(item_namespace => {
+            itemDropdown.updateOptionLabel(item_namespace, languageJson.items[item_namespace]);
+        });
+    }
 
     document.getElementById("override-incompatible").textContent = languageJson.checkbox_label_incompatible;
     document.getElementById("override-max-number").textContent = languageJson.checkbox_label_max_number;
@@ -851,10 +977,9 @@ function changeLanguageByJson(languageJson) {
     const galleryNone = document.querySelector('#bg-gallery-modal .none-option');
     if (galleryNone) galleryNone.setAttribute('data-name', languageJson.gallery_none);
 
-    const startPenalty = document.getElementById('starting-penalty');
-    if (startPenalty) {
-        startPenalty.options[0].textContent = "0 " + languageJson.penalty_new;
-        startPenalty.options[6].textContent = languageJson.penalty_plus;
+    if (penaltyDropdown) {
+        penaltyDropdown.updateOptionLabel("0", "0 " + languageJson.penalty_new);
+        penaltyDropdown.updateOptionLabel("6", languageJson.penalty_plus);
     }
 
     $("select#item").change();
