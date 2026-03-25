@@ -895,6 +895,7 @@ function setupBackgroundImage() {
                 function formatImageName(src) {
                     let filename = src.split('/').pop().split('.')[0];
                     filename = filename.replace(/^1920px-/, '');
+                    filename = filename.replace(/_\d+x\d+$/, '');
                     return filename.split('_').map(word => {
                         return word.charAt(0).toUpperCase() + word.slice(1);
                     }).join(' ');
