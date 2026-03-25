@@ -768,6 +768,8 @@ async function changePageLanguage(language) {
     }
     if (languageJson) {
         changeLanguageByJson(languageJson);
+        const selectLanguage = document.getElementById('language');
+        if (selectLanguage) selectLanguage.value = language;
         localStorage.setItem("savedlanguage", language);
     }
 }
@@ -953,32 +955,6 @@ function setupBackgroundImage() {
                         });
                     }
 
-                    if (typeof OTHER_IMAGES !== 'undefined' && OTHER_IMAGES.length > 0) {
-                        const otherHeader = document.createElement('div');
-                        otherHeader.className = 'gallery-section-title';
-                        otherHeader.textContent = 'Other';
-                        galleryGrid.appendChild(otherHeader);
-
-                        OTHER_IMAGES.forEach(src => {
-                            const img = document.createElement('img');
-                            img.src = src;
-                            img.className = 'gallery-img square smooth';
-                            img.setAttribute('data-src', src);
-                            const name = formatImageName(src);
-                            img.alt = name;
-                            img.setAttribute('data-name', name);
-                            img.addEventListener('click', function (evt) {
-                                applyBackgroundImage(src, false, false);
-                                try {
-                                    localStorage.setItem('custom-bg-image', src);
-                                    localStorage.setItem('custom-bg-tiled', 'false');
-                                    localStorage.setItem('custom-bg-pixelated', 'false');
-                                } catch (err) { }
-                                galleryModal.style.display = 'none';
-                            });
-                            galleryGrid.appendChild(img);
-                        });
-                    }
 
                     if (typeof BLOCK_IMAGES !== 'undefined') {
                         const blockHeader = document.createElement('div');
