@@ -120,10 +120,6 @@ function buildEnchantList(item_namespace_chosen) {
 
     $("#enchants table").html("");
 
-    //
-    // first, filter out which enchants apply to this item
-    //
-
     const item_enchantment_namespaces = [];
     let enchantment_level_maxmax = 0;
 
@@ -150,10 +146,6 @@ function buildEnchantList(item_namespace_chosen) {
             item_enchantment_namespaces.push(enchantment_namespace);
         }
     });
-
-    //
-    // next, group them by incompatible enchants
-    //
 
     const enchantment_groups = [];
     const enchantments_grouped = [];
@@ -384,7 +376,6 @@ function displayInstructionText(instruction) {
 
 function displayEnchantmentsText(enchants) {
     let count = enchants.length
-    //let max_level = data.enchants[enchants].levelMax;
 
     let text = "";
     if (count >= 1) text += "(";
@@ -507,7 +498,7 @@ function afterFoundOptimalSolution(msg) {
         const item = msg.item_obj;
         const cumulative_levels = msg.extra[0];
         minimum_xp = item.x;
-        const maximum_xp = msg.extra[1]; // UNUSED
+        const maximum_xp = msg.extra[1];
         updateCumulativeCost(cumulative_levels, maximum_xp, minimum_xp);
 
         instructions.forEach(instruction => {
@@ -750,7 +741,6 @@ async function setupLanguage() {
 
 function defineBrowserLanguage() {
     if (!localStorage.getItem("savedlanguage")) {
-        // language isn't saved and has to be detected
         const browserLanguage = navigator.language || navigator.userLanguage;
         if (languages[browserLanguage]) {
             changePageLanguage(browserLanguage);
@@ -758,7 +748,6 @@ function defineBrowserLanguage() {
             changePageLanguage('en');
         }
     } else {
-        // language is saved, load from save
         changePageLanguage(localStorage.getItem("savedlanguage"));
     }
 }
@@ -780,7 +769,6 @@ async function changePageLanguage(language) {
     if (languageJson) {
         changeLanguageByJson(languageJson);
         localStorage.setItem("savedlanguage", language);
-        // ^ Save language choice to localstorage
     }
 }
 
@@ -819,7 +807,6 @@ function loadJsonLanguage(language) {
 
 
 function changeLanguageByJson(languageJson) {
-    /* check for duplicate names */
     const map = {};
     for (let i in languageJson.enchants) {
         if (map[languageJson.enchants[i]]) {
@@ -831,16 +818,12 @@ function changeLanguageByJson(languageJson) {
     const h1Element = document.getElementsByTagName('h1')[0];
     h1Element.textContent = languageJson.h1_title;
 
-    /* summaries */
     const summaryEnchants = document.getElementById("summary-about-enchants");
     if (summaryEnchants) summaryEnchants.innerHTML = languageJson.summary_1;
 
-    /* paragraphs */
     const paraAboutEnchants = document.getElementById("para-about-enchants");
     if (paraAboutEnchants) paraAboutEnchants.innerHTML = languageJson.paragraph_1;
 
-
-    /* selection */
     const options = document.getElementById("item").getElementsByTagName("option");
     let i = 1;
 
@@ -850,7 +833,6 @@ function changeLanguageByJson(languageJson) {
         i++;
     });
 
-    /* other UI */
     document.getElementById("override-incompatible").textContent = languageJson.checkbox_label_incompatible;
     document.getElementById("override-max-number").textContent = languageJson.checkbox_label_max_number;
 
@@ -864,7 +846,6 @@ function changeLanguageByJson(languageJson) {
 
     document.getElementById("xp-range-note").textContent = languageJson.note;
 
-    /* new starting state UI */
     const startingTitle = document.getElementById("starting-item-state-title");
     if (startingTitle) startingTitle.textContent = languageJson.starting_item_state_title;
     const anvilPenaltyLabel = document.getElementById("anvil-penalty-label");
@@ -883,7 +864,6 @@ function setupBackgroundImage() {
     const closeGalleryBtn = document.getElementById('close-gallery-btn');
     const galleryModal = document.getElementById('bg-gallery-modal');
 
-    // Load saved background if exists
     const savedBg = localStorage.getItem('custom-bg-image');
     if (savedBg) {
         const isTiled = localStorage.getItem('custom-bg-tiled') === 'true';
@@ -912,7 +892,6 @@ function setupBackgroundImage() {
 
                 function formatImageName(src) {
                     let filename = src.split('/').pop().split('.')[0];
-                    // Clean up 1920px prefixes
                     filename = filename.replace(/^1920px-/, '');
                     return filename.split('_').map(word => {
                         return word.charAt(0).toUpperCase() + word.slice(1);
@@ -923,9 +902,7 @@ function setupBackgroundImage() {
                 const hasBlocks = (typeof BLOCK_IMAGES !== 'undefined' && BLOCK_IMAGES.length > 0);
 
                 if (hasWallpapers || hasBlocks) {
-                    // Wallpapers Section
                     if (hasWallpapers) {
-                        // Put None button as the first item in the grid to avoid grid overlap
                         galleryGrid.appendChild(noneDiv);
 
                         BACKGROUND_IMAGES.forEach(src => {
@@ -937,7 +914,7 @@ function setupBackgroundImage() {
                             img.alt = name;
                             img.setAttribute('data-name', name);
                             img.addEventListener('click', function (evt) {
-                                applyBackgroundImage(src, false, false); // Wallpapers are not pixelated
+                                applyBackgroundImage(src, false, false);
                                 try {
                                     localStorage.setItem('custom-bg-image', src);
                                     localStorage.setItem('custom-bg-tiled', 'false');
@@ -949,7 +926,6 @@ function setupBackgroundImage() {
                         });
                     }
 
-                    // Paintings Section
                     if (typeof PAINTING_IMAGES !== 'undefined' && PAINTING_IMAGES.length > 0) {
                         const paintingHeader = document.createElement('div');
                         paintingHeader.className = 'gallery-section-title';
@@ -957,34 +933,6 @@ function setupBackgroundImage() {
                         galleryGrid.appendChild(paintingHeader);
 
                         PAINTING_IMAGES.forEach(src => {
-                            const img = document.createElement('img');
-                            img.src = src;
-                            img.className = 'gallery-img square';
-                            img.setAttribute('data-src', src);
-                            const name = formatImageName(src);
-                            img.alt = name;
-                            img.setAttribute('data-name', name);
-                            img.addEventListener('click', function (evt) {
-                                applyBackgroundImage(src, false, true); // Paintings are pixelated
-                                try {
-                                    localStorage.setItem('custom-bg-image', src);
-                                    localStorage.setItem('custom-bg-tiled', 'false');
-                                    localStorage.setItem('custom-bg-pixelated', 'true');
-                                } catch (err) { }
-                                galleryModal.style.display = 'none';
-                            });
-                            galleryGrid.appendChild(img);
-                        });
-                    }
-
-                    // Decorations Section
-                    if (typeof OTHER_IMAGES !== 'undefined' && OTHER_IMAGES.length > 0) {
-                        const otherHeader = document.createElement('div');
-                        otherHeader.className = 'gallery-section-title';
-                        otherHeader.textContent = 'Other';
-                        galleryGrid.appendChild(otherHeader);
-
-                        OTHER_IMAGES.forEach(src => {
                             const img = document.createElement('img');
                             img.src = src;
                             img.className = 'gallery-img square';
@@ -1005,16 +953,39 @@ function setupBackgroundImage() {
                         });
                     }
 
-                    // Blocks Section
+                    if (typeof OTHER_IMAGES !== 'undefined' && OTHER_IMAGES.length > 0) {
+                        const otherHeader = document.createElement('div');
+                        otherHeader.className = 'gallery-section-title';
+                        otherHeader.textContent = 'Other';
+                        galleryGrid.appendChild(otherHeader);
+
+                        OTHER_IMAGES.forEach(src => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.className = 'gallery-img square smooth';
+                            img.setAttribute('data-src', src);
+                            const name = formatImageName(src);
+                            img.alt = name;
+                            img.setAttribute('data-name', name);
+                            img.addEventListener('click', function (evt) {
+                                applyBackgroundImage(src, false, false);
+                                try {
+                                    localStorage.setItem('custom-bg-image', src);
+                                    localStorage.setItem('custom-bg-tiled', 'false');
+                                    localStorage.setItem('custom-bg-pixelated', 'false');
+                                } catch (err) { }
+                                galleryModal.style.display = 'none';
+                            });
+                            galleryGrid.appendChild(img);
+                        });
+                    }
+
                     if (typeof BLOCK_IMAGES !== 'undefined') {
                         const blockHeader = document.createElement('div');
                         blockHeader.className = 'gallery-section-title';
                         blockHeader.textContent = 'Blocks (Tiled)';
                         galleryGrid.appendChild(blockHeader);
 
-                        // If no wallpapers followed by blocks, None might be missing. 
-                        // But I put it in wallpapers. 
-                        // If only blocks exist:
                         if (!hasWallpapers) {
                             galleryGrid.insertBefore(noneDiv, blockHeader.nextSibling);
                         }
@@ -1037,7 +1008,7 @@ function setupBackgroundImage() {
                                 img.alt = name;
                                 img.setAttribute('data-name', name);
                                 img.addEventListener('click', function (evt) {
-                                    applyBackgroundImage(src, true, true); // Blocks are tiled and pixelated
+                                    applyBackgroundImage(src, true, true);
                                     try {
                                         localStorage.setItem('custom-bg-image', src);
                                         localStorage.setItem('custom-bg-tiled', 'true');
@@ -1066,7 +1037,6 @@ function setupBackgroundImage() {
                                 const name = target.getAttribute('data-name') || 'None';
                                 tooltip.textContent = name;
                                 tooltip.style.display = 'block';
-                                // To be safe, ensure browser doesn't show title
                                 if (target.title) target.title = "";
                             }
                         }
@@ -1078,7 +1048,6 @@ function setupBackgroundImage() {
 
                     galleryLoaded = true;
                 } else {
-                    // Just show None and empty msg
                     galleryGrid.appendChild(noneDiv);
                     const emptyMsg = document.createElement('p');
                     emptyMsg.style.gridColumn = '1/-1';
@@ -1123,7 +1092,7 @@ function setupBackgroundImage() {
             const reader = new FileReader();
             reader.onload = function (event) {
                 const dataUrl = event.target.result;
-                applyBackgroundImage(dataUrl, tiled, true); // Custom uploads are likely low res or desired as pixelated in this theme
+                applyBackgroundImage(dataUrl, tiled, true);
                 try {
                     localStorage.setItem('custom-bg-image', dataUrl);
                     localStorage.setItem('custom-bg-tiled', tiled);
@@ -1160,7 +1129,7 @@ function applyBackgroundImage(dataUrl, tiled = false, pixelated = false) {
     document.body.classList.add('has-custom-bg');
     if (tiled) {
         document.body.classList.add('tiled');
-        document.body.classList.add('pixelated-bg'); // Tiled blocks are ALWAYS pixelated
+        document.body.classList.add('pixelated-bg');
     } else {
         document.body.classList.remove('tiled');
         if (pixelated) {

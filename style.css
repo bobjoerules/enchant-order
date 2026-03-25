@@ -564,6 +564,10 @@ summary {
   image-rendering: pixelated;
 }
 
+.gallery-img.smooth {
+  image-rendering: auto;
+}
+
 .gallery-img:not(.square) {
   grid-column: span 3;
 }
