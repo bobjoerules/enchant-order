@@ -995,8 +995,8 @@ function changeLanguageByJson(languageJson) {
     if (galleryT) galleryT.textContent = languageJson.gallery_title;
     const galleryUpload = document.getElementById('upload-custom-bg-btn');
     if (galleryUpload) galleryUpload.textContent = languageJson.gallery_upload;
-    const galleryNone = document.querySelector('#bg-gallery-modal .none-option');
-    if (galleryNone) galleryNone.setAttribute('data-name', languageJson.gallery_none);
+    const galleryNone = document.querySelector('#bg-gallery-modal .none-option span');
+    if (galleryNone) galleryNone.textContent = languageJson.gallery_none;
 
     if (penaltyDropdown) {
         penaltyDropdown.updateOptionLabel("0", "0 " + languageJson.penalty_new);
@@ -1033,8 +1033,8 @@ function setupBackgroundImage() {
                 galleryGrid.innerHTML = '';
 
                 const noneDiv = document.createElement('div');
-                noneDiv.className = 'gallery-img gallery-none-card';
-                noneDiv.innerHTML = '<span style="font-size: 24px; font-weight: bold;">None</span>';
+                noneDiv.className = 'gallery-img gallery-none-card none-option';
+                noneDiv.innerHTML = `<span style="font-size: 24px; font-weight: bold;">${languageJson.gallery_none || 'None'}</span>`;
                 noneDiv.setAttribute('data-name', 'Clear Background');
                 noneDiv.addEventListener('click', function () {
                     clearBackground();
