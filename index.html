@@ -64,7 +64,7 @@
                         localStorage.setItem('custom-bg-image', bgImage);
                         localStorage.setItem('custom-bg-tiled', tiled);
                         localStorage.setItem('custom-bg-pixelated', pixelated);
-                    } catch(e) {}
+                    } catch (e) { }
                 }
             }
 
@@ -277,19 +277,32 @@
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <label for="bg-image-input" class="upload-btn">Upload Custom Background...</label>
                     <div class="gallery-filter-group">
-                        <button id="random-filter-wallpapers" class="filter-btn active" title="Include Wallpapers" data-name="Include: Wallpapers">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        <button id="random-filter-wallpapers" class="filter-btn active" title="Include Wallpapers"
+                            data-name="Toggle Wallpapers">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path
+                                    d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                            </svg>
                         </button>
-                        <button id="random-filter-paintings" class="filter-btn active" title="Include Paintings" data-name="Include: Paintings">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9s1.5.67 1.5 1.5S7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                        <button id="random-filter-paintings" class="filter-btn active" title="Include Paintings"
+                            data-name="Toggle Paintings">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path
+                                    d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9s1.5.67 1.5 1.5S7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                            </svg>
                         </button>
-                        <button id="random-filter-blocks" class="filter-btn active" title="Include Blocks" data-name="Include: Blocks">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.97 4.41c-.32.17-.69.17-1 0l-7.97-4.41c-.32-.17-.53-.5-.53-.88V7.5c0-.38.21-.71.53-.88l7.97-4.41c.32-.17.69-.17 1 0l7.97 4.41c.32.17.53.5.53.88v9z"/></svg>
+                        <button id="random-filter-blocks" class="filter-btn active" title="Include Blocks"
+                            data-name="Toggle Blocks">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path
+                                    d="M21 16.5c0 .38-.21.71-.53.88l-7.97 4.41c-.32.17-.69.17-1 0l-7.97-4.41c-.32-.17-.53-.5-.53-.88V7.5c0-.38.21-.71.53-.88l7.97-4.41c.32-.17.69-.17 1 0l7.97 4.41c.32.17.53.5.53.88v9z" />
+                            </svg>
                         </button>
                     </div>
-                    <button id="random-bg-toggle" class="gallery-toggle-btn" title="Random on Reload" data-name="Random on Reload">
+                    <button id="random-bg-toggle" class="gallery-toggle-btn" title="Random" data-name="Random">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.59 11.17l1.41 1.41L20 14.5V20h-5.5l2.04-2.04-4.25-4.25-1.42 1.41 3.72 3.72z"/>
+                            <path
+                                d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.59 11.17l1.41 1.41L20 14.5V20h-5.5l2.04-2.04-4.25-4.25-1.42 1.41 3.72 3.72z" />
                         </svg>
                     </button>
                 </div>
