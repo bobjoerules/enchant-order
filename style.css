@@ -1,14 +1,24 @@
 html {
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background-color: var(--bg-primary);
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
   font-family: arial, serif;
   position: relative;
-  background-color: #e3e4eb;
+  background-color: var(--bg-primary, #e3e4eb);
+  color: var(--fg-primary);
+  margin: 0;
+  display: flow-root;
+  min-height: 100vh;
+  padding-bottom: 110px;
+  box-sizing: border-box;
 }
-
-/* Theme styles */
 
 #theme-switcher-form div:nth-child(1) label {
   background-color: #eee;
@@ -21,8 +31,6 @@ body {
 #theme-switcher-form div:nth-child(3) label {
   background-color: #111111;
 }
-
-/* Remember these for every theme ;) */
 
 html[data-theme="snow"] {
   --bg-primary: #d6d9e6;
@@ -84,8 +92,6 @@ html[data-theme="wither"] {
   --solution: var(--enchantment-results);
 }
 
-/* TODO: fix enchantment results variable name, misnomer */
-
 .selectItem:focus,
 .selectLanguage:focus {
   outline: none
@@ -125,7 +131,6 @@ body h2 {
 
 body.has-custom-bg .inner {
   background-color: rgba(30, 30, 30, 0.85);
-  /* Fallback */
   background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent);
   padding: 50px;
   border-radius: 12px;
@@ -341,7 +346,6 @@ summary {
   font-size: 12px;
 }
 
-/* Top container */
 .top-container {
   float: right;
   display: flex;
@@ -368,9 +372,7 @@ summary {
   justify-content: space-between;
   align-items: center;
   width: min-content;
-  /* Adjust the width as needed */
   margin: auto;
-  /* Center form */
 }
 
 #theme-switcher-form div {
@@ -389,7 +391,6 @@ summary {
   width: 25px;
   height: 25px;
   background: #ccc;
-  /* Default background no one's ever going to see */
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -416,8 +417,6 @@ summary {
   }
 }
 
-/* smol screens */
-
 @media only screen and (min-width: 423px) {
   .footer {
     text-align: right
@@ -432,15 +431,8 @@ summary {
     margin-top: 10px;
     margin-bottom: 10px;
   }
-
-  /*#theme-switcher-form {
-    width: 90px;
-  }*/
 }
 
-/* bigger screens */
-
-/* Gallery Modal */
 .modal {
   display: none;
   position: fixed;
@@ -512,7 +504,7 @@ summary {
 
 #gallery-custom-tooltip {
   position: fixed;
-  z-index: 10001; /* Above modal */
+  z-index: 10001;
   padding: 4px 10px;
   background: rgba(16, 1, 16, 0.94);
   border: 1px solid transparent;
@@ -522,10 +514,8 @@ summary {
   color: #fff;
   font-size: 14px;
   white-space: nowrap;
-  
-  /* Minecraft-like border gradient */
   border-image: linear-gradient(to bottom, #501090, #25015b) 1;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .gallery-grid::-webkit-scrollbar {
