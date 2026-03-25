@@ -583,6 +583,64 @@ summary {
   background-color: var(--table-group1);
 }
 
+.gallery-toggle-btn {
+  background-color: var(--table-group2);
+  color: var(--table-text);
+  border: 1px solid var(--table-group2);
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.gallery-toggle-btn:hover {
+  background-color: var(--table-group1);
+}
+
+.gallery-toggle-btn.active {
+  background-color: var(--link-primary);
+  color: white;
+  border-color: var(--link-primary);
+  box-shadow: 0 0 8px var(--link-primary-glow);
+}
+
+.gallery-filter-group {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 3px;
+  border-radius: 6px;
+  gap: 2px;
+  border: 1px solid var(--table-group2);
+}
+
+.filter-btn {
+  background: none;
+  border: none;
+  color: var(--fg-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+
+.filter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+}
+
+.filter-btn.active {
+  color: var(--link-primary);
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
 .gallery-none-card {
   display: flex;
   align-items: center;

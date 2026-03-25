@@ -34,18 +34,7 @@ const languages = {
 
 const languages_cache_key = 6;
 
-if (!localStorage.getItem("tswitch-theme")) {
-    const prefers_color_scheme = window.matchMedia("(prefers-color-scheme: dark)");
-    if (prefers_color_scheme.matches) {
-        document.documentElement.dataset.theme = 'wither';
-        localStorage.setItem("tswitch-theme", 'wither');
-    } else {
-        document.documentElement.dataset.theme = 'snow';
-        localStorage.setItem("tswitch-theme", 'snow');
-    }
-} else {
-    document.documentElement.dataset.theme = localStorage.getItem("tswitch-theme");
-}
+// Theme is now initialized via head script to prevent flash
 
 window.onload = function () {
 
@@ -880,7 +869,8 @@ function setupBackgroundImage() {
     const galleryModal = document.getElementById('bg-gallery-modal');
 
     const savedBg = localStorage.getItem('custom-bg-image');
-    if (savedBg) {
+    const isRandom = localStorage.getItem('custom-bg-random') === 'true';
+    if (savedBg && !isRandom) {
         const isTiled = localStorage.getItem('custom-bg-tiled') === 'true';
         const isPixelated = localStorage.getItem('custom-bg-pixelated') === 'true';
         applyBackgroundImage(savedBg, isTiled, isPixelated);
@@ -916,11 +906,18 @@ function setupBackgroundImage() {
 
                 const hasWallpapers = typeof BACKGROUND_IMAGES !== 'undefined' && BACKGROUND_IMAGES.length > 0;
                 const hasBlocks = (typeof BLOCK_IMAGES !== 'undefined' && BLOCK_IMAGES.length > 0);
-
                 if (hasWallpapers || hasBlocks) {
-                    if (hasWallpapers) {
-                        galleryGrid.appendChild(noneDiv);
+                    // Set toggle state
+                    const randomToggle = document.getElementById('random-bg-toggle');
+                    if (randomToggle) {
+                        const isRandom = localStorage.getItem('custom-bg-random') === 'true';
+                        randomToggle.classList.toggle('active', isRandom);
+                    }
 
+                    // Add static options at the very beginning
+                    galleryGrid.appendChild(noneDiv);
+
+                    if (hasWallpapers) {
                         BACKGROUND_IMAGES.forEach(src => {
                             const img = document.createElement('img');
                             img.src = src;
@@ -976,10 +973,6 @@ function setupBackgroundImage() {
                         blockHeader.textContent = 'Blocks (Tiled)';
                         galleryGrid.appendChild(blockHeader);
 
-                        if (!hasWallpapers) {
-                            galleryGrid.insertBefore(noneDiv, blockHeader.nextSibling);
-                        }
-
                         if (BLOCK_IMAGES.length === 0) {
                             const emptyMsg = document.createElement('p');
                             emptyMsg.style.gridColumn = '1/-1';
@@ -1012,19 +1005,20 @@ function setupBackgroundImage() {
                     }
 
                     const tooltip = document.getElementById('gallery-custom-tooltip');
+                    const modalContent = galleryModal.querySelector('.modal-content');
 
-                    galleryGrid.addEventListener('mousemove', function (e) {
+                    modalContent.addEventListener('mousemove', function (e) {
                         if (tooltip && tooltip.style.display === 'block') {
                             tooltip.style.left = (e.clientX + 16) + 'px';
                             tooltip.style.top = (e.clientY + 16) + 'px';
                         }
                     });
 
-                    galleryGrid.addEventListener('mouseover', function (evt) {
-                        const target = evt.target;
-                        if (target.classList.contains('gallery-img') || target.classList.contains('gallery-none-card')) {
+                    modalContent.addEventListener('mouseover', function (evt) {
+                        const target = evt.target.closest('.gallery-img, .gallery-none-card, .filter-btn, .gallery-toggle-btn, .upload-btn');
+                        if (target) {
                             if (tooltip) {
-                                const name = target.getAttribute('data-name') || 'None';
+                                const name = target.getAttribute('data-name') || target.textContent || 'None';
                                 tooltip.textContent = name;
                                 tooltip.style.display = 'block';
                                 if (target.title) target.title = "";
@@ -1032,7 +1026,7 @@ function setupBackgroundImage() {
                         }
                     });
 
-                    galleryGrid.addEventListener('mouseout', function (evt) {
+                    modalContent.addEventListener('mouseout', function (evt) {
                         if (tooltip) tooltip.style.display = 'none';
                     });
 
@@ -1095,6 +1089,70 @@ function setupBackgroundImage() {
             if (galleryModal) galleryModal.style.display = 'none';
         }
     }
+    const randomToggle = document.getElementById('random-bg-toggle');
+    if (randomToggle) {
+        randomToggle.addEventListener('click', function () {
+            const isNowRandom = localStorage.getItem('custom-bg-random') !== 'true';
+            localStorage.setItem('custom-bg-random', isNowRandom ? 'true' : 'false');
+            randomToggle.classList.toggle('active', isNowRandom);
+
+            if (isNowRandom) {
+                const all = [];
+                const bgsSelected = localStorage.getItem('custom-bg-include-wallpapers') !== 'false';
+                const paintingsSelected = localStorage.getItem('custom-bg-include-paintings') !== 'false';
+                const blocksSelected = localStorage.getItem('custom-bg-include-blocks') !== 'false';
+
+                if (bgsSelected) {
+                    const bgs = (typeof BACKGROUND_IMAGES !== 'undefined' ? BACKGROUND_IMAGES : []);
+                    bgs.forEach(src => all.push({ src, tiled: false, pixelated: false }));
+                }
+                if (paintingsSelected) {
+                    const pt = (typeof PAINTING_IMAGES !== 'undefined' ? PAINTING_IMAGES : []);
+                    pt.forEach(src => all.push({ src, tiled: false, pixelated: true }));
+                }
+                if (blocksSelected) {
+                    const bl = (typeof BLOCK_IMAGES !== 'undefined' ? BLOCK_IMAGES : []);
+                    bl.forEach(src => all.push({ src, tiled: true, pixelated: true }));
+                }
+
+                if (all.length > 0) {
+                    const choice = all[Math.floor(Math.random() * all.length)];
+                    applyBackgroundImage(choice.src, choice.tiled, choice.pixelated, true);
+                    // Persist for this session
+                    try {
+                        localStorage.setItem('custom-bg-image', choice.src);
+                        localStorage.setItem('custom-bg-tiled', choice.tiled);
+                        localStorage.setItem('custom-bg-pixelated', choice.pixelated);
+                    } catch (e) { }
+                    localStorage.setItem('custom-bg-random', 'true');
+                    if (randomToggle) randomToggle.classList.add('active');
+                }
+            } else {
+                localStorage.setItem('custom-bg-random', 'false');
+                if (randomToggle) randomToggle.classList.remove('active');
+            }
+        });
+    }
+
+    // Category filters
+    const filterWallpapers = document.getElementById('random-filter-wallpapers');
+    const filterPaintings = document.getElementById('random-filter-paintings');
+    const filterBlocks = document.getElementById('random-filter-blocks');
+
+    function setupFilter(btn, key) {
+        if (!btn) return;
+        const isActive = localStorage.getItem(key) !== 'false';
+        btn.classList.toggle('active', isActive);
+        btn.addEventListener('click', function () {
+            const nowActive = !btn.classList.contains('active');
+            btn.classList.toggle('active', nowActive);
+            localStorage.setItem(key, nowActive ? 'true' : 'false');
+        });
+    }
+
+    setupFilter(filterWallpapers, 'custom-bg-include-wallpapers');
+    setupFilter(filterPaintings, 'custom-bg-include-paintings');
+    setupFilter(filterBlocks, 'custom-bg-include-blocks');
 }
 
 function clearBackground() {
@@ -1108,15 +1166,23 @@ function clearBackground() {
     localStorage.removeItem('custom-bg-image');
     localStorage.removeItem('custom-bg-tiled');
     localStorage.removeItem('custom-bg-pixelated');
+    localStorage.removeItem('custom-bg-random');
     const bgInput = document.getElementById('bg-image-input');
     if (bgInput) bgInput.value = '';
     const blockInput = document.getElementById('block-image-input');
     if (blockInput) blockInput.value = '';
+    const randomToggle = document.getElementById('random-bg-toggle');
+    if (randomToggle) randomToggle.classList.remove('active');
 }
 
-function applyBackgroundImage(dataUrl, tiled = false, pixelated = false) {
+function applyBackgroundImage(dataUrl, tiled = false, pixelated = false, fromRandom = false) {
     document.body.style.backgroundImage = 'url("' + dataUrl + '")';
     document.body.classList.add('has-custom-bg');
+    if (!fromRandom) {
+        localStorage.setItem('custom-bg-random', 'false');
+        const randomToggle = document.getElementById('random-bg-toggle');
+        if (randomToggle) randomToggle.classList.remove('active');
+    }
     if (tiled) {
         document.body.classList.add('tiled');
         document.body.classList.add('pixelated-bg');
