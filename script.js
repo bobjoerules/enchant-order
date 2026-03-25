@@ -855,6 +855,19 @@ function changeLanguageByJson(languageJson) {
     const existingEnchantsLabel = document.getElementById("existing-enchantments-label");
     if (existingEnchantsLabel) existingEnchantsLabel.textContent = languageJson.existing_enchantments;
 
+    const galleryT = document.querySelector('#bg-gallery-modal h2');
+    if (galleryT) galleryT.textContent = languageJson.gallery_title;
+    const galleryUpload = document.getElementById('upload-custom-bg-btn');
+    if (galleryUpload) galleryUpload.textContent = languageJson.gallery_upload;
+    const galleryNone = document.querySelector('#bg-gallery-modal .none-option');
+    if (galleryNone) galleryNone.setAttribute('data-name', languageJson.gallery_none);
+
+    const startPenalty = document.getElementById('starting-penalty');
+    if (startPenalty) {
+        startPenalty.options[0].textContent = "0 " + languageJson.penalty_new;
+        startPenalty.options[6].textContent = languageJson.penalty_plus;
+    }
+
     $("select#item").change();
     $("#solution").hide();
     $("#error").hide();
