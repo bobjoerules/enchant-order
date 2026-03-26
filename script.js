@@ -970,12 +970,6 @@ function changeLanguageByJson(languageJson) {
     const h1Element = document.getElementsByTagName('h1')[0];
     h1Element.textContent = languageJson.h1_title;
 
-    const summaryEnchants = document.getElementById("summary-about-enchants");
-    if (summaryEnchants) summaryEnchants.innerHTML = languageJson.summary_1;
-
-    const paraAboutEnchants = document.getElementById("para-about-enchants");
-    if (paraAboutEnchants) paraAboutEnchants.innerHTML = languageJson.paragraph_1;
-
     const options = document.getElementById("item").getElementsByTagName("option");
     let i = 1;
 
