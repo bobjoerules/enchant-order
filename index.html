@@ -30,7 +30,7 @@
 <body>
     <script>
         (function () {
-            const bgRandom = localStorage.getItem('custom-bg-random') === 'true';
+            const bgRandom = localStorage.getItem('custom-bg-random') !== 'false';
             let bgImage = localStorage.getItem('custom-bg-image');
             let tiled = localStorage.getItem('custom-bg-tiled') === 'true';
             let pixelated = localStorage.getItem('custom-bg-pixelated') === 'true';
@@ -38,8 +38,8 @@
             if (bgRandom) {
                 const allImages = [];
                 const bgsSelected = localStorage.getItem('custom-bg-include-wallpapers') !== 'false';
-                const paintingsSelected = localStorage.getItem('custom-bg-include-paintings') !== 'false';
-                const blocksSelected = localStorage.getItem('custom-bg-include-blocks') !== 'false';
+                const paintingsSelected = localStorage.getItem('custom-bg-include-paintings') === 'true';
+                const blocksSelected = localStorage.getItem('custom-bg-include-blocks') === 'true';
 
                 if (bgsSelected) {
                     const bgs = (typeof BACKGROUND_IMAGES !== 'undefined' ? BACKGROUND_IMAGES : []);

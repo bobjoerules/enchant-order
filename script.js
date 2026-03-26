@@ -1026,7 +1026,7 @@ function setupBackgroundImage() {
     const galleryModal = document.getElementById('bg-gallery-modal');
 
     const savedBg = localStorage.getItem('custom-bg-image');
-    const isRandom = localStorage.getItem('custom-bg-random') === 'true';
+    const isRandom = localStorage.getItem('custom-bg-random') !== 'false';
     if (savedBg && !isRandom) {
         const isTiled = localStorage.getItem('custom-bg-tiled') === 'true';
         const isPixelated = localStorage.getItem('custom-bg-pixelated') === 'true';
@@ -1067,7 +1067,7 @@ function setupBackgroundImage() {
                     // Set toggle state
                     const randomToggle = document.getElementById('random-bg-toggle');
                     if (randomToggle) {
-                        const isRandom = localStorage.getItem('custom-bg-random') === 'true';
+                        const isRandom = localStorage.getItem('custom-bg-random') !== 'false';
                         randomToggle.classList.toggle('active', isRandom);
                     }
 
@@ -1249,15 +1249,15 @@ function setupBackgroundImage() {
     const randomToggle = document.getElementById('random-bg-toggle');
     if (randomToggle) {
         randomToggle.addEventListener('click', function () {
-            const isNowRandom = localStorage.getItem('custom-bg-random') !== 'true';
+            const isNowRandom = localStorage.getItem('custom-bg-random') === 'false';
             localStorage.setItem('custom-bg-random', isNowRandom ? 'true' : 'false');
             randomToggle.classList.toggle('active', isNowRandom);
 
             if (isNowRandom) {
                 const all = [];
                 const bgsSelected = localStorage.getItem('custom-bg-include-wallpapers') !== 'false';
-                const paintingsSelected = localStorage.getItem('custom-bg-include-paintings') !== 'false';
-                const blocksSelected = localStorage.getItem('custom-bg-include-blocks') !== 'false';
+                const paintingsSelected = localStorage.getItem('custom-bg-include-paintings') === 'true';
+                const blocksSelected = localStorage.getItem('custom-bg-include-blocks') === 'true';
 
                 if (bgsSelected) {
                     const bgs = (typeof BACKGROUND_IMAGES !== 'undefined' ? BACKGROUND_IMAGES : []);
@@ -1296,9 +1296,9 @@ function setupBackgroundImage() {
     const filterPaintings = document.getElementById('random-filter-paintings');
     const filterBlocks = document.getElementById('random-filter-blocks');
 
-    function setupFilter(btn, key) {
+    function setupFilter(btn, key, defaultOn = true) {
         if (!btn) return;
-        const isActive = localStorage.getItem(key) !== 'false';
+        const isActive = defaultOn ? localStorage.getItem(key) !== 'false' : localStorage.getItem(key) === 'true';
         btn.classList.toggle('active', isActive);
         btn.addEventListener('click', function () {
             const nowActive = !btn.classList.contains('active');
@@ -1307,9 +1307,9 @@ function setupBackgroundImage() {
         });
     }
 
-    setupFilter(filterWallpapers, 'custom-bg-include-wallpapers');
-    setupFilter(filterPaintings, 'custom-bg-include-paintings');
-    setupFilter(filterBlocks, 'custom-bg-include-blocks');
+    setupFilter(filterWallpapers, 'custom-bg-include-wallpapers', true);
+    setupFilter(filterPaintings, 'custom-bg-include-paintings', false);
+    setupFilter(filterBlocks, 'custom-bg-include-blocks', false);
 }
 
 function clearBackground() {
@@ -1323,7 +1323,7 @@ function clearBackground() {
     localStorage.removeItem('custom-bg-image');
     localStorage.removeItem('custom-bg-tiled');
     localStorage.removeItem('custom-bg-pixelated');
-    localStorage.removeItem('custom-bg-random');
+    localStorage.setItem('custom-bg-random', 'false');
     const bgInput = document.getElementById('bg-image-input');
     if (bgInput) bgInput.value = '';
     const blockInput = document.getElementById('block-image-input');
