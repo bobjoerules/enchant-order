@@ -47,7 +47,7 @@ const BACKGROUND_IMAGES = [
     //"backgrounds/Baroque_Painting.jpg",
     "backgrounds/Birtch Forest.jpeg",
     "backgrounds/Cherry.jpeg",
-    "backgrounds/Cherry2.jpg",
+    //"backgrounds/Cherry2.jpg",
     "backgrounds/Dennis_painting.jpeg",
     "backgrounds/Dragon.jpg",
     //"backgrounds/editorial_soothingstories_article_lead_dreamydesert_1280x720.jpeg",
@@ -65,9 +65,9 @@ const BACKGROUND_IMAGES = [
     "backgrounds/New_Paintings_13-15.jpg",
     //"backgrounds/Pack.png_Painting.jpg",
     //"backgrounds/Prairie_Ride_Painting.jpg",
-    "backgrounds/Swamp.jpeg",
-    "backgrounds/Swamp2.jpeg",
-    "backgrounds/Swamp3.jpeg",
+    //"backgrounds/Swamp.jpeg",
+    //"backgrounds/Swamp2.jpeg",
+    //"backgrounds/Swamp3.jpeg",
 ];
 
 const PAINTING_IMAGES = [
