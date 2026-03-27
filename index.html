@@ -94,115 +94,111 @@
 
         <h1>Minecraft Enchantment Ordering Tool</h1>
 
-        <div id="left">
-
-            <p>
-                <label for="item"></label>
-                <select id="item" class="selectItem">
-                    <option value="">Choose an item to enchant</option>
-                </select>
-            </p>
-
-            <details id="starting-state" style="display: none; margin-bottom: 20px;">
-                <summary id="starting-item-state-title" style="font-size: 1rem; margin-bottom: 10px;">Starting Item
-                    State (Optional)</summary>
-                <div
-                    style="padding: 15px; border: 1px solid var(--table-group2); border-radius: 8px; background: var(--bg-secondary); margin-bottom: 15px;">
-                    <div id="anvil-penalty-container">
-                        <label for="starting-penalty" id="anvil-penalty-label" style="font-weight: bold;">Anvil
-                            Penalty:</label>
-                        <select id="starting-penalty" class="selectLanguage" style="display: none;">
-                            <option value="0">0 (New)</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6+</option>
-                        </select>
-                    </div>
-                    <p id="existing-enchantments-label" style="font-weight: bold; margin-bottom: 8px;">Existing
-                        Enchantments:</p>
-                    <div id="starting-enchants"
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; font-size: 0.9rem;">
-                    </div>
-                </div>
-            </details>
-
-            <div id="enchants" style="display: none">
-                <table></table>
-
-                <div id="overrides">
-                    <div>
-                        <label>
-                            <input type="checkbox" id="allow_incompatible" onchange="allowIncompatibleChanged()">
-                            <span id="override-incompatible">Allow incompatible enchantments</span>
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" id="allow_many" onchange="allowManyChanged()">
-                            <span id="override-max-number">Allow more than 10 enchantments</span>
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" id="rename_item" onchange="renameItemChanged()">
-                            <span id="rename-item-label">Rename Item</span>
-                        </label>
-                    </div>
-                </div>
-                <p>
-                    <button id="calculate">Calculate &raquo;</button>
-                </p>
+        <div id="item-selection-area">
+            <div id="item-grid" class="item-selection-grid">
+                <!-- Populated by JS -->
             </div>
+            <select id="item" style="display: none;">
+                <option value="">Choose an item to enchant</option>
+            </select>
         </div>
 
-        <div id="right">
+        <div class="main-content">
+            <div id="left">
 
-            <p id="mode_selection">
-                <span id="optimize-label">Optimize for:</span>
-                <label>
-                    <input type="radio" name="cheapness-mode" checked="checked" value="levels">
-                    <span id="optimize-xp">Least XP/Levels</span>
-                </label>
-                <label>
-                    <input type="radio" name="cheapness-mode" value="prior_work">
-                    <span id="optimize-pwp">Least Prior Work Penalty</span>
-                </label>
-            </p>
+                <details id="starting-state" style="display: none;">
+                    <summary id="starting-item-state-title">Starting Item State (Optional)</summary>
+                    <div>
+                        <div id="anvil-penalty-container">
+                            <label for="starting-penalty" id="anvil-penalty-label">Anvil Penalty:</label>
+                            <select id="starting-penalty" class="selectLanguage" style="display: none;">
+                                <option value="0">0 (New)</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6+</option>
+                            </select>
+                        </div>
+                        <p id="existing-enchantments-label">Existing Enchantments:</p>
+                        <div id="starting-enchants">
+                        </div>
+                    </div>
+                </details>
 
-            <div id="progress" style="display: none">
-                <img src="spin.svg" width="20" height="20" alt="">
-                <span class="lbl">Text here</span>
+                <div id="enchants" style="display: none">
+                    <div class="enchants-grid"></div>
+
+                    <div id="overrides">
+                        <div id="mode_selection">
+                            <span id="optimize-label">Optimize for:</span>
+                            <label title="Least XP/Levels">
+                                <input type="radio" name="cheapness-mode" checked="checked" value="levels">
+                                <span id="optimize-xp">Least XP/Levels</span>
+                            </label>
+                            <label title="Least Prior Work Penalty">
+                                <input type="radio" name="cheapness-mode" value="prior_work">
+                                <span id="optimize-pwp">Least Prior Work Penalty</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input type="checkbox" id="allow_incompatible" onchange="allowIncompatibleChanged()">
+                                <span id="override-incompatible">Allow incompatible enchantments</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input type="checkbox" id="allow_many" onchange="allowManyChanged()">
+                                <span id="override-max-number">Allow more than 10 enchantments</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input type="checkbox" id="rename_item" onchange="renameItemChanged()">
+                                <span id="rename-item-label">Rename Item</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button id="calculate">Calculate &raquo;</button>
+                </div>
             </div>
 
-            <div id="solution" style="display: none">
-                <h2 id="solution-header">Optimal solution found!</h2>
+            <div id="right">
 
-                <p id="timings">Completed in under a second</p>
-                <p><b id="total-cost-label">Total cost:</b> <span id="level-cost">####</span></p>
-                <h3>Steps</h3>
-                <ol id="steps">
-                </ol>
-                <p id="xp-range-note" style="display: none">
-                    Note: The two XP values shown are the difference between saving up for all levels/XP in one go,
-                    versus gaining levels/XP between each enchantment step.
-                </p>
+                <div id="progress" style="display: none">
+                    <img src="spin.svg" width="20" height="20" alt="">
+                    <span class="lbl">Text here</span>
+                </div>
+
+                <div id="solution" style="display: none">
+                    <h2 id="solution-header">Optimal solution found!</h2>
+
+                    <p id="timings">Completed in under a second</p>
+                    <p><b id="total-cost-label">Total cost:</b> <span id="level-cost">####</span></p>
+                    <h3>Steps</h3>
+                    <ol id="steps">
+                    </ol>
+                    <p id="xp-range-note" style="display: none">
+                        Note: The two XP values shown are the difference between saving up for all levels/XP in one go,
+                        versus gaining levels/XP between each enchantment step.
+                    </p>
+                </div>
+
+                <div id="error" style="display: none">
+                    <span class="lbl">Text here</span>
+                </div>
+
+                <div id="phone-warn" style="display: none">
+                    <span class="lbl">
+                        You have selected many enchantments and are using a phone or tablet - the calculator may run out of
+                        memory and crash.
+                        Try selecting fewer enchantments, or using a computer.
+                    </span>
+                </div>
+
             </div>
-
-            <div id="error" style="display: none">
-                <span class="lbl">Text here</span>
-            </div>
-
-            <div id="phone-warn" style="display: none">
-                <span class="lbl">
-                    You have selected many enchantments and are using a phone or tablet - the calculator may run out of
-                    memory and crash.
-                    Try selecting fewer enchantments, or using a computer.
-                </span>
-            </div>
-
         </div>
     </div>
     <div class="footer">

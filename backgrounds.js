@@ -62,7 +62,7 @@ const BACKGROUND_IMAGES = [
     "backgrounds/New_Paintings_6-7.jpg",
     "backgrounds/New_Paintings_8-10.jpg",
     "backgrounds/New_Paintings_11-12.jpg",
-    "backgrounds/New_Paintings_13-15.jpg",
+    //"backgrounds/New_Paintings_13-15.jpg",
     //"backgrounds/Pack.png_Painting.jpg",
     //"backgrounds/Prairie_Ride_Painting.jpg",
     //"backgrounds/Swamp.jpeg",

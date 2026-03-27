@@ -36,7 +36,7 @@ const languages_cache_key = 6;
 
 // Theme is now initialized via head script to prevent flash
 
-window.onload = function () {
+window.onload = async function () {
 
     worker = new Worker("work.js?6");
     worker.onmessage = function (event) {
@@ -49,7 +49,7 @@ window.onload = function () {
         data: data
     });
 
-    setupLanguage();
+    await setupLanguage();
     buildItemSelection();
     buildStartingPenaltySelection();
     buildEnchantmentSelection();
@@ -70,31 +70,36 @@ function buildFilters() {
 
 let itemDropdown;
 function buildItemSelection() {
-    const itemOptions = [
-        { value: "", label: "Choose an item to enchant" }
-    ];
+    const $grid = $("#item-grid");
+    $grid.empty();
+    
     data.items.forEach(item_namespace => {
-        itemOptions.push({ value: item_namespace, label: item_namespace });
+        const localizedName = (languageJson.items && languageJson.items[item_namespace]) || item_namespace;
+        const item_box = $(`
+            <div class="item-slot" title="${localizedName}" data-value="${item_namespace}">
+                <div class="item-icon-wrapper">
+                    <img src="./images/${item_namespace}.gif" alt="${localizedName}">
+                </div>
+                <span class="item-name">${localizedName}</span>
+            </div>
+        `);
+        
+        item_box.click(function() {
+            $(".item-slot").removeClass("selected");
+            $(this).addClass("selected");
+            $("#item").val(item_namespace).change();
+        });
+        
+        $grid.append(item_box);
     });
 
-    // Populate native select for compatibility
+    // Populate native select for system compatibility
     $("#item").empty();
-    itemOptions.forEach(opt => {
-        $("<option/>", { value: opt.value }).text(opt.label).appendTo("#item");
+    $("<option/>", { value: "" }).text(languageJson.choose_an_item_to_enchant || "Choose an item").appendTo("#item");
+    data.items.forEach(item_namespace => {
+        const localizedName = (languageJson.items && languageJson.items[item_namespace]) || item_namespace;
+        $("<option/>", { value: item_namespace }).text(localizedName).appendTo("#item");
     });
-
-    itemDropdown = createCustomDropdown(
-        itemOptions,
-        $('#left p:first'),
-        $('#item'),
-        function (val) {
-            if (!val) return '';
-            return `<img src="./images/${val}.gif" class="icon" alt="">`;
-        },
-        function (val) {
-            $('#item').val(val).change();
-        }
-    );
 }
 
 function createCustomDropdown(options, $targetContainer, $nativeSelect, getIconHtml, onSelect) {
@@ -233,7 +238,7 @@ function incompatibleGroupFromNamespace(enchantment_namespace) {
 function buildEnchantList(item_namespace_chosen) {
     const enchantments_metadata = data.enchants;
 
-    $("#enchants table").html("");
+    $("#enchants .enchants-grid").html("");
 
     const item_enchantment_namespaces = [];
     let enchantment_level_maxmax = 0;
@@ -294,9 +299,14 @@ function buildEnchantList(item_namespace_chosen) {
             const enchantment_max_level = enchantment_metadata.levelMax;
             const enchantment_name = languageJson.enchants[enchantment_namespace];
 
-            const enchantment_row = $("<tr>");
+            const enchantment_row = $("<div/>");
+            enchantment_row.addClass("enchantment-row");
             enchantment_row.addClass(group_toggle_color ? "group1" : "group2");
-            enchantment_row.append($("<td>").append(enchantment_name));
+
+            const name_span = $("<span/>").addClass("enchantment-name").text(enchantment_name);
+
+            const levels_container = $("<div/>").addClass("enchantment-levels");
+
             for (let enchantment_level = 1; enchantment_level <= enchantment_level_maxmax; enchantment_level++) {
                 if (enchantment_max_level >= enchantment_level) {
                     const enchantment_button_data = {
@@ -308,14 +318,11 @@ function buildEnchantList(item_namespace_chosen) {
                     enchantment_button.addClass("off");
                     enchantment_button.addClass("level-button");
                     enchantment_button.data(enchantment_button_data);
-
-                    const enchantment_row_append = $("<td>").append(enchantment_button);
-                    enchantment_row.append(enchantment_row_append);
-                } else {
-                    enchantment_row.append($("<td>"));
+                    levels_container.append(enchantment_button);
                 }
             }
-            $("#enchants table").append(enchantment_row);
+            enchantment_row.append(name_span).append(levels_container);
+            $("#enchants .enchants-grid").append(enchantment_row);
             group_toggle_color = !group_toggle_color;
         });
     });
@@ -404,7 +411,7 @@ function buildEnchantmentSelection() {
         }
     });
 
-    $("#enchants table").on("click", "button", function () {
+    $("#enchants .enchants-grid").on("click", "button", function () {
         levelButtonClicked($(this));
     });
 }
@@ -885,20 +892,20 @@ async function setupLanguage() {
             changePageLanguage(val);
         }
     );
-    defineBrowserLanguage();
+    await defineBrowserLanguage();
 }
 
 
-function defineBrowserLanguage() {
+async function defineBrowserLanguage() {
     if (!localStorage.getItem("savedlanguage")) {
         const browserLanguage = navigator.language || navigator.userLanguage;
         if (languages[browserLanguage]) {
-            changePageLanguage(browserLanguage);
+            await changePageLanguage(browserLanguage);
         } else {
-            changePageLanguage('en');
+            await changePageLanguage('en');
         }
     } else {
-        changePageLanguage(localStorage.getItem("savedlanguage"));
+        await changePageLanguage(localStorage.getItem("savedlanguage"));
     }
 }
 
