@@ -9,7 +9,7 @@ let languageId;
 let enchants_list;
 
 const languages = {
-    'en': { name: 'English', code: 'us' },
+    'en': { name: 'English', code: 'gb' },
     'de': { name: 'Deutsch', code: 'de' },
     'es-ES': { name: 'Español', code: 'es' },
     'fr-FR': { name: 'Français', code: 'fr' },
