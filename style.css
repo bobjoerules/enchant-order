@@ -526,20 +526,77 @@ details {
     align-items: stretch;
   }
 
-  h1 {
-    font-size: 24px;
-  }
-
-  #left {
+  #left, #right, #enchants {
     width: auto;
   }
+}
 
-  #right {
-    width: auto;
+@media only screen and (max-width: 600px) {
+  .logo h1 {
+    font-size: 1.4em !important;
   }
 
-  #enchants {
-    width: auto;
+  header {
+    margin: 10px auto 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .inner {
+    padding-bottom: 20px;
+  }
+
+  body.has-custom-bg .inner {
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .enchants-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .enchantment-row {
+    padding: 0.4rem 0.6rem;
+    min-height: 44px;
+    border-radius: 4px;
+  }
+
+  .enchantment-name {
+    font-size: 0.85rem;
+  }
+
+  #enchants button {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+
+  #calculate {
+    padding: 10px 15px;
+    font-size: 1rem;
+  }
+
+  .item-selection-grid {
+    gap: 4px;
+    padding: 5px;
+    margin-bottom: 20px;
+  }
+
+  .item-slot {
+    width: 44px;
+    height: 44px;
+  }
+
+  .item-icon-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+  
+  #starting-enchants {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
   }
 }
 
