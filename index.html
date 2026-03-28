@@ -81,18 +81,22 @@
         })();
     </script>
 
-    <div class="inner">
-
-        <div class="top-container">
-            <p id="language-selection-container">
-                <label for="language"></label>
-                <select id="language" class="selectLanguage">
-                </select>
-            </p>
-
+    <header>
+        <div class="logo">
+            <h1>Enchantment Ordering Tool</h1>
         </div>
+        <div class="controls">
+            <div class="select-wrapper">
+                <p id="language-selection-container">
+                    <label for="language"></label>
+                    <select id="language" class="selectLanguage" aria-label="Language Selector">
+                    </select>
+                </p>
+            </div>
+        </div>
+    </header>
 
-        <h1>Minecraft Enchantment Ordering Tool</h1>
+    <div class="inner">
 
         <div id="item-selection-area">
             <div id="item-grid" class="item-selection-grid">
@@ -192,7 +196,8 @@
 
                 <div id="phone-warn" style="display: none">
                     <span class="lbl">
-                        You have selected many enchantments and are using a phone or tablet - the calculator may run out of
+                        You have selected many enchantments and are using a phone or tablet - the calculator may run out
+                        of
                         memory and crash.
                         Try selecting fewer enchantments, or using a computer.
                     </span>
