@@ -56,7 +56,23 @@ window.onload = async function () {
     buildCalculateButton();
     buildFilters();
     setupBackgroundImage();
+    initThemeSwitcher();
 };
+
+function initThemeSwitcher() {
+    const themeInputs = document.querySelectorAll('input[name="theme-choice"]');
+    const currentTheme = localStorage.getItem("tswitch-theme") || document.documentElement.dataset.theme || 'wither';
+    document.documentElement.dataset.theme = currentTheme;
+
+    themeInputs.forEach(input => {
+        if (input.value === currentTheme) input.checked = true;
+        input.addEventListener('change', (e) => {
+            const theme = e.target.value;
+            document.documentElement.dataset.theme = theme;
+            localStorage.setItem("tswitch-theme", theme);
+        });
+    });
+}
 
 function buildCalculateButton() {
     $("#calculate").click(calculate);
