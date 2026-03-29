@@ -724,8 +724,7 @@ header {
 
 .select-wrapper {
   position: relative;
-  background-color: var(--table-group1);
-  background-color: color-mix(in srgb, var(--table-group1) 60%, transparent);
+  background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent);
   border: 1px solid var(--table-group2);
   border-radius: 8px;
   backdrop-filter: blur(8px);
@@ -734,7 +733,7 @@ header {
 }
 
 .select-wrapper:hover {
-  background-color: color-mix(in srgb, var(--table-group1) 80%, transparent);
+  background-color: color-mix(in srgb, var(--bg-primary) 95%, transparent);
   border-color: var(--link-primary);
 }
 
